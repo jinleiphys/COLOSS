@@ -44,6 +44,7 @@ To complie the program:
 
 ## Examples for 93Nb(d,d)93Nb at 20MeV
 ### Input
+```
 &general  
     nr=60  alpha=0 Rmax=40 ctheta=6 
     matgauss=f bgauss=f method=1
@@ -60,6 +61,8 @@ To complie the program:
     vs=0 rvs=0 avs=0
     ws=14.247 rws=1.328 aws=0.669 
     rc=1.698 /
+
+```
 
 ### Output
 ```
