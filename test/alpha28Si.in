@@ -1,0 +1,18 @@
+&general  
+        nr=80  alpha=0 Rmax=50 ctheta=6 
+        matgauss=t bgauss=t
+        numgauss = 300 rmaxgauss=100
+        thetah=1.0 thetamax=180 /
+
+&system 
+        zp=2    massp=4    namep='4He'
+        zt=14   masst=28   namet='28Si' 
+        jmin=0 jmax=20  elab=30   /  
+
+&pot
+        vv=155.832 rv=1.342 av=0.658  
+        wv=0.210 rw=1.426 aw=0.559
+        vs=0 rvs=0 avs=0
+        ws=25.191 rws=1.293 aws=0.636 
+        rc=1.35/
+
