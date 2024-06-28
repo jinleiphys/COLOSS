@@ -62,6 +62,7 @@ To complie the program:
     rc=1.698 /
 
 ### Output
+```
  ************************************************************
  *                  COLOSS: Complex-scaled                  *
  *          Optical and couLOmb Scattering Solver           *
@@ -134,3 +135,4 @@ To complie the program:
  * hbarc=197.32697 MeV.fm     e^2= 1.43997 MeV.fm *
  * so, alpha= 1/137.03547       amu=931.4943 MeV  *
  **************************************************
+```
