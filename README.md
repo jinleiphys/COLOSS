@@ -5,22 +5,22 @@
 COLOSS utilizes the FORTRAN namelist to construct a user-friendly input format. 
 
 ### General namelist: nr, alpha, Rmax, ctheta, matguass, bguass, numgauss, rmaxgauss, method,backrot, cwftype, thetah, thetamax
-- nr: number of the Lagrange-Laguerre basis/ order of the generalized Laguerre polynomial
-- alpha: parameter of the Laguerre polynomial
+- nr: number of the Lagrange-Laguerre basis/ order of the generalized Laguerre polynomial in the calculation
+- alpha: parameter of the generalized Laguerre polynomial
 - Rmax: maximum value of the points in the scaled Lagrange-Laguerre mesh
-- ctheta: rotation angle for complex scaling in degree unit
-- matgauss: determines whether to use the Gauss-Legendre quadrature to evaluate the matrix element
-- bgauss: determines whether to use the Gauss-Legendre quadrature to evaluate the inhomogeneous     terms in the linear equation
+- ctheta: rotation angle for complex scaling in degrees
+- matgauss: determines whether to use the Gauss-Legendre quadrature to evaluate the matrix elements of the Hamiltonian
+- bgauss: determines whether to use the Gauss-Legendre quadrature to evaluate the inhomogeneous terms in the linear equation
 - numgauss: number of Gauss-Legendre mesh points
 - rmaxgauss: maximum radius of the Gauss-Legendre mesh points
-- method:
-- backrot: determines whether to rotate the basis backward or to rotate the potential directly in the calculation.
-- cwftype: type of different Coulomb wave functions in the calculation.
+- method: option for 2 different method to calculate the scattering amplitude, set it as 1 for linear equation method, and 2 for the Green's function method
+- backrot: determines whether to rotate the basis backward or to rotate the potential directly in the calculation
+- cwftype: options for 2 different subroutines to calculate Coulomb wave functions. Set it as 1 to call COULCC, and 2 to call cwfcomplex
 - thetah: step size for the angle in the output differential cross section
-- thetamax: maximum angle in the output differential cross section.
+- thetamax: maximum angle in the output differential cross section
 
 ### System namelist: zp, zt, massp, masst, namep, namet, jmin, jmax, elab
-- zp,zt: charge number of the projectile and the target
+- zp, zt: charge number of the projectile and the target
 - massp, masst: mass number of the projectile and the traget
 - namep, namet: name of the projectile and the target
 - jmin, jmax: minimum/maximum total angular momentum of the reaction system considered in the calculation
