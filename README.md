@@ -5,33 +5,40 @@
 COLOSS utilizes the FORTRAN namelist to construct a user-friendly input format. 
 
 ### General namelist: nr, alpha, Rmax, ctheta, matguass, bguass, numgauss, rmaxgauss, method,backrot, cwftype, thetah, thetamax
-- nr: number of the Lagrange-Laguerre basis/ order of the generalized Laguerre polynomial in the calculation
-- alpha: parameter of the generalized Laguerre polynomial
-- Rmax: maximum value of the points in the scaled Lagrange-Laguerre mesh
-- ctheta: rotation angle for complex scaling in degrees
-- matgauss: determines whether to use the Gauss-Legendre quadrature to evaluate the matrix elements of the Hamiltonian
-- bgauss: determines whether to use the Gauss-Legendre quadrature to evaluate the inhomogeneous terms in the linear equation
-- numgauss: number of Gauss-Legendre mesh points
-- rmaxgauss: maximum radius of the Gauss-Legendre mesh points
-- method: option for 2 different method to calculate the scattering amplitude, set it as 1 for linear equation method, and 2 for the Green's function method
-- backrot: determines whether to rotate the basis backward or to rotate the potential directly in the calculation
-- cwftype: options for 2 different subroutines to calculate Coulomb wave functions. Set it as 1 to call COULCC, and 2 to call cwfcomplex
-- thetah: step size for the angle in the output differential cross section
-- thetamax: maximum angle in the output differential cross section
+- nr(integer*4): number of the Lagrange-Laguerre basis/ order of the generalized Laguerre polynomial in the calculation
+- alpha(real*8): parameter of the generalized Laguerre polynomial
+- Rmax(real*8): maximum value of the points in the scaled Lagrange-Laguerre mesh
+- ctheta(real*8): rotation angle for complex scaling in degrees
+- matgauss(logical): determines whether to use the Gauss-Legendre quadrature to evaluate the matrix elements of the Hamiltonian
+- bgauss(logical): determines whether to use the Gauss-Legendre quadrature to evaluate the inhomogeneous terms in the linear equation
+- numgauss(integer*4): number of Gauss-Legendre mesh points
+- rmaxgauss(real*8): maximum radius of the Gauss-Legendre mesh points
+- method(integer*4): option for 2 different method to calculate the scattering amplitude, set it as 1 for linear equation method, and 2 for the Green's function method
+- backrot(logical): determines whether to rotate the basis backward or to rotate the potential directly in the calculation
+- cwftype(integer*4): options for 2 different subroutines to calculate Coulomb wave functions. Set it as 1 to call COULCC, and 2 to call cwfcomplex
+- thetah(real*8): step size for the angle in the output differential cross section
+- thetamax(real*8): maximum angle in the output differential cross section
 
 ### System namelist: zp, zt, massp, masst, namep, namet, jmin, jmax, elab
-- zp, zt: charge number of the projectile and the target
-- massp, masst: mass number of the projectile and the traget
-- namep, namet: name of the projectile and the target
-- jmin, jmax: minimum/maximum total angular momentum of the reaction system considered in the calculation
-- elab: incident kinetic energy of the projectile in the laboratory frame
+- zp, zt(real*8): charge number of the projectile and the target
+- massp, masst(real*8): mass number of the projectile and the traget
+- namep, namet(character): name of the projectile and the target
+- jmin, jmax(integer*4): minimum/maximum total angular momentum of the reaction system considered in the calculation
+- elab(real*8): incident kinetic energy of the projectile in the laboratory frame
 
 ### Pot namelist: vv, rv, av, wv, rw, aw, vs, rvs, avs, ws, rws, aws, rc
-- vv, rv, av: depth, radius, and width parameters of the real volume term in OMP
-- wv, rw, aw: depth, radius, and width parameters of the imaginary volume term in OMP
-- vs, rvs, avs: depth, radius, and width parameters of the real surface term in OMP
-- ws, rws, aws: depth, radius, and width parameters of the imaginary surface term in OMP
-- rc: charge radius for Coulomb interaction in OMP
+- vv, rv, av(real*8): depth, radius, and width parameters of the real volume term in OMP
+- wv, rw, aw(real*8): depth, radius, and width parameters of the imaginary volume term in OMP
+- vs, rvs, avs(real*8): depth, radius, and width parameters of the real surface term in OMP
+- ws, rws, aws(real*8): depth, radius, and width parameters of the imaginary surface term in OMP
+- rc(real*8): charge radius for Coulomb interaction in OMP
+
+## Output description
+- fort.1: the local copy of the input file
+- fort.10: The scaled Lagrange-Laguerre mesh points and weights
+- fort.60: The S-matrices for different partial waves
+- fort.61: The nuclear scattering amplitudes for different partial waves
+- fort.67: The angular distribution of the cross section
 
 ## Getting started
 In **COLOSS**, we use GNU Compiler Collection(GCC). Make sure you have installed GCC. For linear algebra subroutines, we use LAPACK package.
