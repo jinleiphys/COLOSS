@@ -1,0 +1,7 @@
+dump
+*.o 
+*.mod
+fort.*
+*.a
+*.so
+COLOSS

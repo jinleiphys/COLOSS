@@ -10,7 +10,6 @@
 
             implicit none
 
-
             complex*16,dimension(:), allocatable :: V_nuc!rotated nuclear potential on laguerre mesh
             complex*16,dimension(:), allocatable :: V_coul!rotated coulomb potential on laguerre mesh
             complex*16,dimension(:), allocatable :: Vcoul_origin!original nuclear potential on laguerre mesh
@@ -41,32 +40,23 @@
                 
                 para%rc=0d0
 
+                para%vv=vv
+                para%rvv=rv
+                para%avv=av
 
+                para%wv=wv
+                para%rw=rw
+                para%aw=aw
 
+                para%vs=vs
+                para%rvs=rvs
+                para%avs=avs
 
-                    para%vv=vv
-                    para%rvv=rv
-                    para%avv=av
+                para%ws=ws
+                para%rws=rws
+                para%aws=aws
 
-                    para%wv=wv
-                    para%rw=rw
-                    para%aw=aw
-
-                    para%vs=vs
-                    para%rvs=rvs
-                    para%avs=avs
-
-                    para%ws=ws
-                    para%rws=rws
-                    para%aws=aws
-
-                    para%rc=rc
-
-
-
-
-
-
+                para%rc=rc
 
                 write(*,*) '------------- Optical Model Potential -------------'
                 write(*,20) masst, zt, elab, para%rc
@@ -104,21 +94,13 @@
 
                 do ir = 1, nr
                     r  = mesh_rr(ir)*eitheta
-                    real_volume = -w_s(r,para%vv,para%rvv*a13,para%avv)
-                    img_volume = -w_s(r,para%wv,para%rw*a13,para%aw)
-                    real_surf = 4.0d0*para%avs*dws(r,para%vs,para%rvs*a13,para%avs) !usually thers is no real_surf
-                    img_surf = 4.0d0*para%aws*dws(r,para%ws, para%rws*a13, para%aws)
-                    V_nuc(ir) = real_volume + real_surf + iu*(img_surf+img_volume)                               
+                    V_nuc(ir) = WS_nuclear(r,para)                               
                     !write(901,*) mesh_rr(ir), real(V_nuc(ir)), aimag(V_nuc(ir))
                 end do
 
                 do ir = 1, nr
                     r  = mesh_rr(ir)
-                    real_volume = -w_s(r,para%vv,para%rvv*a13,para%avv)
-                    img_volume = -w_s(r,para%wv,para%rw*a13,para%aw)
-                    real_surf = 4.0d0*para%avs*dws(r,para%vs,para%rvs*a13,para%avs) !usually thers is no real_surf
-                    img_surf = 4.0d0*para%aws*dws(r,para%ws, para%rws*a13, para%aws)
-                    V_nuc_origin(ir) = real_volume + real_surf + iu * (img_surf+img_volume)                              
+                    V_nuc_origin(ir) = WS_nuclear(r,para)                              
                     !write(902,*) mesh_rr(ir), real(V_nuc_origin(ir)), aimag(V_nuc_origin(ir))
                 end do
 
@@ -188,10 +170,6 @@ c           by doing the numerical integral with Gauss quadtrature method.
 
                 endif
 
-
-
-                  
-
                 !calculate the coulomb matrix
                 coulmat = 0.d0
                 if(backrot) then
@@ -260,22 +238,14 @@ c           by doing the numerical integral with Gauss quadtrature method.
                 !calculate the rotated optical potential on the gauss mesh
                 do ir = 1, numgauss
                     r  = gauss_rr(ir)
-                    real_volume = -w_s(r,para%vv,para%rvv*a13,para%avv)
-                    img_volume = -w_s(r,para%wv,para%rw*a13,para%aw)
-                    real_surf = 4.0d0*para%avs*dws(r,para%vs,para%rvs*a13,para%avs) !usually thers is no real_surf
-                    img_surf = 4.0d0*para%aws*dws(r,para%ws, para%rws*a13, para%aws)
-                    Vnuc_gauss(ir) = real_volume + real_surf + iu*(img_surf+img_volume)                               
+                    Vnuc_gauss(ir) = WS_nuclear(r,para)                               
                 end do
 
                 else
 
                 do ir = 1, numgauss
                     r  = gauss_rr(ir)*eitheta
-                    real_volume = -w_s(r,para%vv,para%rvv*a13,para%avv)
-                    img_volume = -w_s(r,para%wv,para%rw*a13,para%aw)
-                    real_surf = 4.0d0*para%avs*dws(r,para%vs,para%rvs*a13,para%avs) !usually thers is no real_surf
-                    img_surf = 4.0d0*para%aws*dws(r,para%ws, para%rws*a13, para%aws)
-                    Vnuc_gauss(ir) = real_volume + real_surf + iu*(img_surf+img_volume)                               
+                    Vnuc_gauss(ir) = WS_nuclear(r,para)                               
                 end do
 
                 endif
@@ -393,6 +363,23 @@ c *** WS derivative
             else
                 write(0,*)'derivative WS: a too small!';stop
             endif
+            return
+        end function
+
+        function WS_nuclear(r,para)
+            implicit none
+            type(pot_para) :: para
+            complex*16 :: r,WS_nuclear
+            complex*16 :: real_volume, img_volume, real_surf, img_surf
+            real*8 :: a13
+            a13 = para%a2**(1d0/3d0)
+
+            real_volume = -w_s(r,para%vv,para%rvv*a13,para%avv)
+            img_volume = -w_s(r,para%wv,para%rw*a13,para%aw)
+            real_surf = 4.0d0*para%avs*dws(r,para%vs,para%rvs*a13,para%avs) !usually thers is no real_surf
+            img_surf = 4.0d0*para%aws*dws(r,para%ws, para%rws*a13, para%aws)
+
+            WS_nuclear = real_volume + real_surf + iu*(img_surf+img_volume)
             return
         end function
 

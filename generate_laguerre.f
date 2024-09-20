@@ -221,11 +221,11 @@ c---------------------------------------------------------------
                     end select
                     
 
-                        rho = k*mesh_rr(i)! no rotation always use COULCC
-                        call COULCC(rho,eta,zjmin,NL,fc(:,i),gc,fcp,gcp,sig,mode,0,ifail) 
-                        if (ifail/=0) then
-                           write(*,*) 'coul90: ifail=',ifail
-                        endif
+                    rho = k*mesh_rr(i)! no rotation always use COULCC
+                    call COULCC(rho,eta,zjmin,NL,fc(:,i),gc,fcp,gcp,sig,mode,0,ifail) 
+                    if (ifail/=0) then
+                        write(*,*) 'coul90: ifail=',ifail
+                    endif
 
 
                 end do
@@ -276,16 +276,6 @@ c---------------------------------------------------------------
                     call cpu_time(t2)
                     write(*,11) t2-t1
                 endif
-                
-
-                do il=0,jmax
-                    write(701,*) "&l =",il
-                    write(702,*) "&l =",il
-                    do i = 1, nr
-                        write(701,*) k*mesh_rr(i)*eitheta,real(fc_rotated(il,i)),aimag(fc_rotated(il,i))
-                        write(702,*) mesh_rr(i),real(fc(il,i))
-                    end do
-                end do
 
 
             end subroutine
