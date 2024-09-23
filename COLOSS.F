@@ -10,6 +10,7 @@
         use scatt
         use coulfunc
         use npcc
+        use yamaguchi
 
         implicit none
 
@@ -29,6 +30,7 @@
         allocate(scatt_amp_nuc_l(0:jmax))
 
         !call slove_np_cc(ecm)
+        call nonlocal_test()
 
         select case(method)
         

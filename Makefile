@@ -22,7 +22,7 @@ gauss_mesh.o \
 gauss.o coulcc.o coul90.o\
 generate_laguerre.o rot_potential.o \
 solve_eigen.o input.o \
-matrix_element.o bound.o npcc.o scatt.o  
+matrix_element.o bound.o npcc.o yamaguchi.o scatt.o  
 
 # define the static library
 STLIB = liballmodules.a

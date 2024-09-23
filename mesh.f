@@ -25,7 +25,9 @@ c-------Some general parameters-------------------
                 real*8 :: thetah, thetamax
                 integer :: theta_n_max
 
-
                 integer :: method
+
+                logical :: nonlocal
+                real*8 :: nonlocal_beta
                 
         end module

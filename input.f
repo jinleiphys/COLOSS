@@ -20,6 +20,7 @@
                 namelist /pot/
      &                                  vv,rv,av,wv,rw,aw,
      &                                  vs,rvs,avs,ws,rws,aws,rc
+                namelist /nonlocal_pot/ nonlocal,nonlocal_beta
 
 
                 write(*,*)'************************************************************'
@@ -101,9 +102,19 @@ c
             
 c------------------end of potential namelist---------------------------
 
+c------------------nonlocal_pot namelist------------------------------
+
+                nonlocal = .false.
+                nonlocal_beta = 0.d0
+
+                read(5,nml=nonlocal_pot)
+
+c------------------end of nonlocal_pot namelist-----------------------
+
                 write(1,nml=general)
                 write(1,nml=system)
                 write(1,nml=pot)
+                write(1,nml=nonlocal_pot) 
 
 
             end subroutine
