@@ -23,9 +23,6 @@
                 real*8 :: E
                 type(pot_para) :: para
 
-                real*8 :: mass
-                real*8 :: charge
-
                 para%a1 = massp
                 para%a2 = masst
                 para%z1 = zp
@@ -40,21 +37,17 @@
                 
                 para%rc=0d0
 
-                para%vv=vv
-                para%rvv=rv
-                para%avv=av
+                para%vv=vv; para%rvv=rv; para%avv=av
+                
+                para%wv=wv; para%rw=rw; para%aw=aw
+                
+                para%vs=vs; para%rvs=rvs; para%avs=avs
+                
+                para%ws=ws; para%rws=rws; para%aws=aws
+                
+                para%vsov=vsov; para%rsov=rsov; para%asov=asov
 
-                para%wv=wv
-                para%rw=rw
-                para%aw=aw
-
-                para%vs=vs
-                para%rvs=rvs
-                para%avs=avs
-
-                para%ws=ws
-                para%rws=rws
-                para%aws=aws
+                para%vsow=vsow; para%rsow=rsow; para%asow=asow
 
                 para%rc=rc
 
@@ -62,10 +55,12 @@
                 write(*,20) masst, zt, elab, para%rc
                 write(*,111) para%vv,para%rvv,para%avv,para%wv,para%rw,para%aw
                 write(*,112) para%vs,para%rvs,para%avs,para%ws,para%rws,para%aws
+                write(*,113) para%vsov,para%rsov,para%asov,para%vsow,para%rsow,para%asow
 
 20              format(' Optical Potential for A = ',f5.1,' Z = ',f4.1,' at ',f7.3,' MeV ','rc =',f7.3)
 111             format('  Vv     rvv    avv    Wv     rw     aw', /,6f7.3,/)
 112             format('  Vs     rvs    avs    Ws     rws    aws',/,6f7.3,/)
+113             format('  Vsov   rsov   asov   vsow   rsow   asow',/,6f7.3,/) 
             end subroutine
 
 

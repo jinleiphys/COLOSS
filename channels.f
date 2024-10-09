@@ -54,10 +54,8 @@
                 end do
             end do
 
-            write(*,204) jmin,jmax
-204         FORMAT(' Total J Range:', I3,' <= J <= ',I3)
-
-            
+            write(*,204) sp, (jmax+sp)
+204         FORMAT(' Total J Range:', f3.1,' <= J <= ',f3.1)
 
 1000  format (I5, 2X, I5, 2X, F6.1, 2X, F6.1)
 

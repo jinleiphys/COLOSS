@@ -97,6 +97,8 @@ c------------------potential namelist----------------------------------
                 wv=0d0; rw=0d0; aw=0d0
                 vs=0d0; rvs=0d0; avs=0d0
                 ws=0d0; rws=0d0; aws=0d0
+                vsov=0d0; rsov=0d0; asov=0d0
+                vsow=0d0; rsow=0d0; asow=0d0
                 rc=0d0
 
 c

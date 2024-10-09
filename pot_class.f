@@ -25,6 +25,8 @@
             real*8 :: wv,rw,aw
             real*8 :: vs,rvs,avs
             real*8 :: ws,rws,aws
+            real*8 :: vsov,rsov,asov
+            real*8 :: vsow,rsow,asow
             real*8 :: rc
 
         end module
