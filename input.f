@@ -15,7 +15,7 @@
      &                                 matgauss,thetah,thetamax,
      &                                 bgauss,cwftype,method
 
-                namelist /system/ zp,massp,namep,zt,masst,namet,elab,jmax,jmin
+                namelist /system/ zp,massp,namep,zt,masst,namet,elab,jmax,jmin,sp
 
                 namelist /pot/
      &                                  vv,rv,av,wv,rw,aw,
@@ -62,6 +62,7 @@ c------------------system namelist--------------------------------------
                 massp = 0.d0; masst = 0.d0
                 zp = 0.d0; zt = 0.d0
                 elab = 0.d0
+                sp = 0d0
                 jmin = 0
                 jmax = 0
 
@@ -83,6 +84,7 @@ c------------------system namelist--------------------------------------
 203             FORMAT(' C.M. Frame Energy:', f8.2, ' MeV')
                 write(*,204) jmin,jmax
 204             FORMAT(' Total J Range:', I3,' <= J <= ',I3)
+
 
                 write(*,*) ''
 

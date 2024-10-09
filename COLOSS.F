@@ -11,6 +11,7 @@
         use coulfunc
         use npcc
         use yamaguchi
+        use channels
 
         implicit none
 
@@ -18,6 +19,8 @@
         real*8 :: t1,t2
         
         call read_input()! read the input from the standard IO
+
+        call generate_channels()!generate the channel index
 
         call init_laguerre_mesh()! generate the laguerre mesh and the scaled mesh
 
