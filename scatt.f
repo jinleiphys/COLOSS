@@ -12,7 +12,7 @@
 
             implicit none
 
-            complex*16, dimension(:), allocatable :: scatt_amp_nuc_l
+            complex*16, dimension(:), allocatable :: scatt_amp_nuc_channel
 
 
             contains
@@ -41,7 +41,6 @@ c                        write(*,*) "vmod is",vmod
 c                    write(*,*) i_eigen,"is",dn(i_eigen)
                 end do
 
-c                write(*,*)"coul is", sin(k*100.d0*eitheta)
 
                 !calculate the f_sc
                 f_sc = 0.d0
@@ -60,7 +59,7 @@ c                    write(*,*) i_eigen,"is",dn(i_eigen)**2/(ecm - eigen_val(i_e
                 f_born = -f_born/ecm
 
                 ftot = f_sc + f_born
-                scatt_amp_nuc_l(l) = ftot
+                scatt_amp_nuc_channel(l) = ftot
                 smat = 1.d0 + 2.d0*iu*k*ftot
 
                 write(*, 300) l, real(smat), aimag(smat)
@@ -146,12 +145,14 @@ C100             FORMAT(' l=',I4,' S-matrix is (',f10.6,' , ',f10.6, ' )')
             end subroutine
 
 
-            subroutine solve_scatt(l,para)
+            subroutine solve_scatt(ich,para)
                 use coulfunc
                 use slove_eigen
                 type(pot_para) :: para
-                integer :: l
+                integer :: ich!channel index
 
+                integer :: l
+                real*8 :: S, J
                 complex*16,dimension(1:nr,1:nr) :: Hmat
                 complex*16,dimension(1:nr) :: B_vec,X_vec
                 integer :: ir, i_cor
@@ -162,11 +163,14 @@ C100             FORMAT(' l=',I4,' S-matrix is (',f10.6,' , ',f10.6, ' )')
 
                 complex*16 :: f_born, f_sc, ftot, smat
 
-                call cal_Hmat(l,para,Hmat)
+                l = channel_index%L(ich)
+                S = channel_index%S(ich)
+                j = channel_index%J(ich)
+                call cal_Hmat(ich,para,Hmat)
                 call cal_N0()
 
                 B_vec = 0d0
-                call cal_b(l,B_vec)
+                call cal_b(ich,B_vec)
 
                 X_vec = B_vec! copy the inhomo term, and zgesv will return the result into it
                 
@@ -190,13 +194,13 @@ C100             FORMAT(' l=',I4,' S-matrix is (',f10.6,' , ',f10.6, ' )')
                 f_sc = -f_sc/ecm/exp(2d0*iu*cph(l))
 
                 ftot = f_born + f_sc
-                scatt_amp_nuc_l(l) = ftot
+                scatt_amp_nuc_channel(ich) = ftot
                 
                 smat = 1.d0 + 2.d0*iu*k*ftot
                 reac_xsec = pi/k/k*(2d0*l+1d0)*(1d0 - abs(smat)**2)
 
-                write(*, 300) l, real(smat), aimag(smat), reac_xsec
-300             FORMAT(I3,' | (',F10.6,', ',F10.6,')  | ',F10.4)
+                write(*, 300) l,S,J, real(smat), aimag(smat), reac_xsec
+300             FORMAT(I3,3x,F3.1,2x,F5.1,' | (',F10.6,', ',F10.6,')  | ',F14.4)
 C               write(*,99) l
 99              FORMAT(' l = ',I3,':')
 C               write(*,100) real(smat), aimag(smat)

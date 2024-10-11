@@ -6,7 +6,7 @@
 &system 
         zp=1    massp=2   namep='2H'
         zt=41   masst=93  namet='93Nb'
-        jmin=0 jmax=20  elab=20  sp = 0.5/  
+        jmin=0 jmax=20  elab=20 sp=0.5/  
 
 &pot
         vv=84.323 rv=1.174 av=0.809

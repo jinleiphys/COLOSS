@@ -15,7 +15,7 @@
 
         implicit none
 
-        integer :: ll
+        integer :: ich,ll
         real*8 :: t1,t2
         
         call read_input()! read the input from the standard IO
@@ -30,20 +30,20 @@
 
         call init_coul()!generate the coulomb function to caculate scatt
 
-        allocate(scatt_amp_nuc_l(0:jmax))
+        allocate(scatt_amp_nuc_channel(1:channel_index%ch_numbers))
 
         !call slove_np_cc(ecm)
-        call nonlocal_test()
+        !call nonlocal_test()
 
         select case(method)
         
         case(1)
                 call cpu_time(t1)
                 write(*,*) "Using Linear Equation Method to Solve"
-                write(*,200)
+                write(*,200) "L", "S", "J", "Real(Smat)", "Imag(Smat)", "Partial Wave Reac_Xsec (mb)"
                 write(*,201)
-                do ll = jmin, jmax
-                        call solve_scatt(ll,input_pot)
+                do ich = 1, channel_index%ch_numbers
+                        call solve_scatt(ich,input_pot)
                 end do
                 call cpu_time(t2)
         case(2)
@@ -57,14 +57,16 @@
                 end do
                 call cpu_time(t2)
         end select
-200   FORMAT(' l  |   S-matrix (real, imag)   | Partial Wave Reaction Cross Section (mb)')
-201   FORMAT(' -----------------------------------------------------------------------')
-202   FORMAT(' l  | S-matrix (real, imag)     | ')
-        write(*,*) '-----------------------------------------------------'
-        write(*,11) t2-t1
-11              format(20x,'(CPU  time =',F12.6,2x,'seconds)')
+        write(*,201)
 
-        call xsec(real(eta),k,scatt_amp_nuc_l,jmax,thetah,theta_n_max)
+200   FORMAT(A3,3X,A3,2X,A5,' | (',A10,', ',A10,')  | ',A28)
+201   FORMAT(' ----------------------------------------------------------------------------')
+202   FORMAT(' l  | S-matrix (real, imag)     | ')
+
+        write(*,11) t2-t1
+11    FORMAT(20x,'(CPU  time =',F12.6,2x,'seconds)')
+
+        call xsec(real(eta),k,scatt_amp_nuc_channel,jmax,thetah,theta_n_max)
 
         call outinfo()
 

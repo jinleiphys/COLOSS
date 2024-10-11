@@ -6,6 +6,7 @@
             use pot_class
             use generate_laguerre
             use rot_pot
+            use channels
              
             implicit none
 
@@ -62,7 +63,7 @@ c-----------------------------------------------------------------
             end subroutine
 
 c--------------------------------------------------------------
-            subroutine generate_V0(V,para)
+            subroutine generate_V0(V,para,ich)
 c           This subroutine is used to generate the 
 c           potential matrix element with parameters <para>
 c           INPUT:
@@ -71,6 +72,7 @@ c           OUTPUT:
 c               <V>: the potential matrix
 c--------------------------------------------------------------
                 complex*16, dimension(1:nr,1:nr) :: V
+                integer :: ich
                 complex*16, dimension(1:nr ,1:nr) :: coul_matrix,nuc_matrix
                 type(pot_para) :: para
 
@@ -84,14 +86,14 @@ c--------------------------------------------------------------
                 z12 = zt*zp
                 
                 !calculate the array of nuclear potential on laggurre mesh
-                call rot_V_nuc(para)
+                call rot_V_nuc(para,ich)
                 !calculate the array of coulomb potential on laggurre mesh
                 call rot_V_coul(z12,rrc)
 
                 if(matgauss) then
                     ! use gauss quadtrature to evaluate the matrix element with more grids
                     call coul_mat_gauss(z12,rrc,coul_matrix)
-                    call nuc_mat_gauss(para,nuc_matrix)
+                    call nuc_mat_gauss(para,ich,nuc_matrix)
                 else
                     ! use the approximation for lagrange functions to evaluate the marix element
                     do ir = 1, nr
@@ -106,7 +108,7 @@ c--------------------------------------------------------------
 
             end subroutine
 c--------------------------------------------------------------
-            subroutine cal_Hmat(l,p,Hmat)
+            subroutine cal_Hmat(ich,p,Hmat)
 c           This subroutine is used to generate the 
 c           Hamiltonian matrix element for partial wave<l>
 c           with potential parameters <p>
@@ -116,26 +118,27 @@ c               <p>: the parameter for optical potential
 c           OUTPUT:
 c               <H>: the Hamiltonian matrix
 c--------------------------------------------------------------
-                integer :: l 
+                integer :: ich 
                 type(pot_para) :: p
                 complex*16, dimension(1:nr,1:nr) :: Hmat
 
 
+                integer :: l
                 complex*16,dimension(1:nr,1:nr) :: Tmat
                 complex*16,dimension(1:nr,1:nr) :: Vmat
 
-                Tmat = 0.d0
-                Vmat = 0.d0
-
+                Tmat = 0.d0; Vmat = 0.d0
+                
+                l = channel_index%L(ich)
                 call generate_T0(Tmat,l,mu)
 
-                call generate_V0(Vmat,p)
+                call generate_V0(Vmat,p,ich)
 
                 Hmat = Tmat + Vmat
 
             end subroutine
 c--------------------------------------------------------------
-            subroutine cal_b(l,B_vec)
+            subroutine cal_b(ich,B_vec)
 c           This subroutine is used to generate the 
 c           inhomogenous term of the linear equation
 c           INPUT:
@@ -143,12 +146,15 @@ c               <l>: partial wave number
 c           OUTPUT:
 c               <B_vec>: the inhomogenous term array 
 c--------------------------------------------------------------
-                integer :: l
+                integer :: ich
                 complex*16, dimension(1:nr) :: B_vec
 
                 complex*16 :: vmod
 
                 integer :: ir, i_cor
+                integer :: l
+
+                l = channel_index%L(ich)
                 
 
                 if(bgauss) then!use gauss quad to evaluate the inhomo term

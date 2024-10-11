@@ -6,6 +6,7 @@
             use pot_class
             use mesh
             use generate_laguerre
+            use channels
 
 
             implicit none
@@ -66,17 +67,21 @@
 
 
 
-            subroutine rot_V_nuc(para)
+            subroutine rot_V_nuc(para,ich)
 
                 type(pot_para) :: para
+                integer :: ich
 
                 integer :: ir 
                 complex*16 :: r
-                real*8 :: a13
 
-                complex*16 :: real_volume, img_volume, real_surf, img_surf
+                integer :: L
+                real*8 :: J,S,twoLdotS
 
-                a13 = masst**(1./3.)
+                L = channel_index%L(ich)
+                S = channel_index%S(ich)
+                J = channel_index%J(ich)
+                twoLdotS = J*(J+1d0) - S*(S+1d0) - L*(L+1d0)
 
                 if(allocated(V_nuc)) deallocate(V_nuc)
                 allocate(V_nuc(1:nr))
@@ -89,13 +94,13 @@
 
                 do ir = 1, nr
                     r  = mesh_rr(ir)*eitheta
-                    V_nuc(ir) = WS_nuclear(r,para)                               
+                    V_nuc(ir) = WS_nuclear(r,para,twoLdotS)                               
                     !write(901,*) mesh_rr(ir), real(V_nuc(ir)), aimag(V_nuc(ir))
                 end do
 
                 do ir = 1, nr
                     r  = mesh_rr(ir)
-                    V_nuc_origin(ir) = WS_nuclear(r,para)                              
+                    V_nuc_origin(ir) = WS_nuclear(r,para,twoLdotS)                              
                     !write(902,*) mesh_rr(ir), real(V_nuc_origin(ir)), aimag(V_nuc_origin(ir))
                 end do
 
@@ -206,12 +211,13 @@ c           by doing the numerical integral with Gauss quadtrature method.
             end subroutine
 
 
-            subroutine nuc_mat_gauss(para,nucmat)
+            subroutine nuc_mat_gauss(para,ich,nucmat)
 c           This subroutine calculate the rotated optical potential
 c           on the gauss mesh, and then evalutate the matrix element
 c           by doing the numerical integral with Gauss quadtrature method.
 
                 type(pot_para) :: para
+                integer :: ich
                 complex*16, dimension(1:nr,1:nr) :: nucmat
 
                 integer :: ir
@@ -222,8 +228,14 @@ c           by doing the numerical integral with Gauss quadtrature method.
                 complex*16 :: nucij
                 integer :: i,j,i_cor
                 complex*16 :: rr
+                integer :: l
+                real*8 :: totJ,S,twoLdotS
 
                 a13 = masst**(1d0/3d0)
+                l = channel_index%L(ich)
+                S = channel_index%S(ich)
+                totJ = channel_index%J(ich)
+                twoLdotS = totJ*(totJ+1d0) - S*(S+1d0) - l*(l+1d0)
 
                 if(allocated(Vnuc_gauss)) deallocate(Vnuc_gauss)
                 allocate(Vnuc_gauss(1:numgauss))
@@ -233,14 +245,14 @@ c           by doing the numerical integral with Gauss quadtrature method.
                 !calculate the rotated optical potential on the gauss mesh
                 do ir = 1, numgauss
                     r  = gauss_rr(ir)
-                    Vnuc_gauss(ir) = WS_nuclear(r,para)                               
+                    Vnuc_gauss(ir) = WS_nuclear(r,para,twoLdotS)                               
                 end do
 
                 else
 
                 do ir = 1, numgauss
                     r  = gauss_rr(ir)*eitheta
-                    Vnuc_gauss(ir) = WS_nuclear(r,para)                               
+                    Vnuc_gauss(ir) = WS_nuclear(r,para,twoLdotS)                               
                 end do
 
                 endif
@@ -361,21 +373,29 @@ c *** WS derivative
             return
         end function
 
-        function WS_nuclear(r,para)
+        function WS_nuclear(r,para,twoLdotS) 
             implicit none
             type(pot_para) :: para
+            real*8 :: twoLdotS
             complex*16 :: r,WS_nuclear
-            complex*16 :: real_volume, img_volume, real_surf, img_surf
+            real*8 :: pionmass
+            complex*16 :: real_volume, img_volume, real_surf, img_surf, real_SO, img_SO
             real*8 :: a13
             a13 = para%a2**(1d0/3d0)
+            pionmass = 2d0
 
             real_volume = -w_s(r,para%vv,para%rvv*a13,para%avv)
             img_volume = -w_s(r,para%wv,para%rw*a13,para%aw)
+
             real_surf = 4.0d0*para%avs*dws(r,para%vs,para%rvs*a13,para%avs) !usually thers is no real_surf
             img_surf = 4.0d0*para%aws*dws(r,para%ws, para%rws*a13, para%aws)
 
-            WS_nuclear = real_volume + real_surf + iu*(img_surf+img_volume)
+            real_SO = pionmass/r*dws(r,para%vsov,para%rsov*a13,para%asov)*twoLdotS
+            img_SO = pionmass/r*dws(r,para%vsow,para%rsow*a13,para%asow)*twoLdotS
+
+            WS_nuclear = real_volume + real_surf + real_SO + iu*(img_surf + img_volume + img_SO)
             return
+
         end function
 
         end module rot_pot
