@@ -9,7 +9,7 @@
             use rot_pot
             use pot_class
             use coulfunc
-
+            use cleb_coefficient
             implicit none
 
             complex*16, dimension(:), allocatable :: scatt_amp_nuc_channel
@@ -89,58 +89,80 @@ C100             FORMAT(' l=',I4,' S-matrix is (',f10.6,' , ',f10.6, ' )')
                 real*8, dimension(0:jmax) :: cph
                 real*8 :: cph0
 
-                complex*16, dimension(1:thetanmax) :: fc_theta, fn_theta
-                complex*16, dimension(1:thetanmax) :: ftot_theta,ftot_rel
+                complex*16, dimension(1:thetanmax) :: fc_theta
+                real*8, dimension(1:thetanmax) :: xsec_theta,xsec_rel_theta
                 integer :: itheta
                 real*8 :: ang_rad
 
                 real*8, dimension(0:jmax,0:jmax) :: legendre_poly
                 real*8 :: costheta
-                integer :: ll
 
+                integer :: i_MI, i_MF
+                real*8 :: MI, MF
+                integer :: ich,ll
+                real*8 :: J,S
+                complex*16 :: fm1m2
+                real*8 :: cleb1,cleb2
+
+                !calculate the coulomb scattering amp for different angles
+                fc_theta = 0d0
                 if(eta>0) then
-
                     call coulph(eta,cph,jmax)
                     cph0 = cph(0)
-
-                    !calculate the coulomb scattering amp for different angles
-                    fc_theta = 0d0
                     do itheta = 1, thetanmax
                         ang_rad = itheta*thetah/180d0*pi
                         fc_theta(itheta) = -eta/k/2d0/sin(0.5d0*ang_rad)**2d0
      &                                      *exp( 2d0*iu*(cph0 - eta*log(sin(0.5d0*ang_rad))) )
                     end do
-
                 endif
 
-                !calculate the short range scattering amp for different angles
-                fn_theta = 0d0
-                do itheta = 1, thetanmax
-                    ang_rad = itheta*thetah/180d0*pi
-                    costheta = cos(ang_rad)
-                    call PLM( costheta, jmax, jmax, jmax+1, legendre_poly )
-                    do ll = 0, jmax
-                        fn_theta(itheta) = fn_theta(itheta) + 
-     &                          (2d0*ll+1)*exp(2d0*iu*cph(ll))*fl(ll)*legendre_poly(ll,0)
-                    end do
-                end do
+                call factorialgen(4*jmax)
 
+                xsec_theta = 0d0
+                do itheta = 1, thetanmax
+                ang_rad = itheta*thetah/180d0*pi
+                costheta = cos(ang_rad)
+                call PLM( costheta, jmax, jmax, jmax+1, legendre_poly )
+
+                do i_MI = 1, nint(2*sp+1)
+                    MI = -sp + (i_MI - 1)
+                    do i_MF = 1, nint(2*sp+1)
+                        MF = -sp + (i_MF - 1)
+
+                        fm1m2 = 0d0
+                        do ich = 1, channel_index%ch_numbers
+                            ll = channel_index%L(ich)
+                            S = channel_index%S(ich)
+                            J = channel_index%J(ich)
+                            cleb1 = cleb(2*ll, 0,nint(2d0*S),nint(2d0*MI),nint(2d0*J),nint(2d0*MI))
+                            cleb2 = cleb(2*ll, nint(2d0*(MI-MF)), nint(2d0*S), nint(2*MF), nint(2d0*J), nint(2*MI))
+                            fm1m2 = fm1m2 + (2d0*ll+1d0) * exp(2d0*iu*cph(ll)) 
+     &                                      *scatt_amp_nuc_channel(ich)
+     &                                      *cleb1*cleb2
+     &                                      *legendre_poly(ll, abs(nint(MI-MF)))
+
+                        end do! end do for different channels
+                        if(MI .eq. MF) then
+                            fm1m2 = fm1m2 + fc_theta(itheta)
+                        endif
+
+                        xsec_theta(itheta) = xsec_theta(itheta) + abs(fm1m2)**2
+
+                    end do! end do for M_final
+                end do! end do for M_initial
+                end do! end do for different angles
+                xsec_theta = xsec_theta /(2d0*sp+1d0)
+                
                 if(eta>0) then
-                    ftot_theta = fn_theta + fc_theta!add up two amplitudes
-                    ftot_rel = ftot_theta/fc_theta
-
                     do itheta = 1, thetanmax
-                        write(67,110) itheta*thetah, abs(ftot_rel(itheta))**2
+                        xsec_rel_theta(itheta) = xsec_theta(itheta) / (abs(fc_theta(itheta))**2)
+                        write(67,*) itheta*thetah, xsec_rel_theta(itheta)
                     end do
-
                 else
-                    
-                do itheta = 1, thetanmax
-                    write(67,110) itheta*thetah, abs(fn_theta(itheta))**2
-                end do
-
+                    do itheta = 1, thetanmax
+                        write(67,*) itheta*thetah, xsec_theta(itheta)
+                    end do
                 endif
-110             FORMAT(f6.2, es12.4)
 
             end subroutine
 

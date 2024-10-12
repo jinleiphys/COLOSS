@@ -18,7 +18,7 @@ FFLAGS = -O2 -Wtabs -fopenmp -Wconversion -ffixed-line-length-0 -cpp -fPIC\
 
 # define the object files
 OBJF = precision.o constants.o system.o mesh.o pot_class.o spharm.o\
-gauss_mesh.o channels.o\
+clebsch.o gauss_mesh.o channels.o\
 gauss.o coulcc.o coul90.o\
 generate_laguerre.o rot_potential.o \
 solve_eigen.o input.o \
