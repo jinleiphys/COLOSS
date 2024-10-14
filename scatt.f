@@ -159,6 +159,7 @@ C100             FORMAT(' l=',I4,' S-matrix is (',f10.6,' , ',f10.6, ' )')
                         write(67,*) itheta*thetah, xsec_rel_theta(itheta)
                     end do
                 else
+                    xsec_theta = 10d0*xsec_theta
                     do itheta = 1, thetanmax
                         write(67,*) itheta*thetah, xsec_theta(itheta)
                     end do

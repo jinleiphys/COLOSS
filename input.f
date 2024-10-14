@@ -19,7 +19,9 @@
 
                 namelist /pot/
      &                                  vv,rv,av,wv,rw,aw,
-     &                                  vs,rvs,avs,ws,rws,aws,rc
+     &                                  vs,rvs,avs,ws,rws,aws,
+     &                                  vsov,rsov,asov,vsow,rsow,asow,
+     &                                  rc
                 namelist /nonlocal_pot/ nonlocal,nonlocal_beta
 
 
