@@ -1,5 +1,5 @@
 &general  
-        nr=60  alpha=0 Rmax=40 ctheta=6 
+        nr=60  alpha=0 Rmax=40 ctheta=5 
         matgauss=f bgauss=f method=1
         thetah=1.0 thetamax=180 /
 

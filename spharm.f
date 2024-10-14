@@ -1,7 +1,50 @@
       module spharm
       contains
 
-c  Subroutine from fresco to calculate the p_{lm}(\theta)
+
+      subroutine SPYLM(L,M,cth,Y)
+       implicit none
+       real*8 :: theta
+       integer :: L,M
+       real*8 :: cth,Y
+       real*8,dimension(0:l,0:l) :: PL
+       call PLM(cth,l,l,l+1,PL)
+       Y=YLMC(L,M)*PL(l,abs(M)) !  *exp(-imag*abs(ma)*phi)
+
+!       write(*,*) "YLMC=",YLMC(L,M)
+      end subroutine
+
+
+
+c-----------------------calculate the norm(l,m)-------------------------
+!
+!  CALCULATE THE COEFFICIENT OF P(L,M)*E(I*M*PHI) IN Y(L,M)
+!  AMoro: Uses |M|
+!
+      FUNCTION YLMC(L,M)
+      use cleb_coefficient
+c	  use factorials
+!      use constants,only:pi
+      use precision
+      IMPLICIT REAL*8(A-H,O-Z)
+      integer,intent(IN):: L,M
+      PHASE(I) = (-1)**I
+c      pi=acos(-1d0)
+      LF1 = L + 1
+      MA = ABS(M)
+      R =  FLOG(LF1-MA)-FLOG(LF1+MA)
+      R = SQRT((2*L+1)/(4*PI)*EXP(R))* PHASE(M)
+      IF(M.LT.0) R = R * PHASE(MA)
+      YLMC = R
+      RETURN
+      END function
+
+
+
+c-------------------------end calculate norm(l,m)-----------------------
+
+c-----------------------calculate the p_{lm}(\theta)--------------------
+c from fresco
 c  x: cos(\theta) -1<=x<=1
 c  N:   lmax
 c  M:   m_max -> lmax
@@ -43,11 +86,29 @@ c  NA:  lmax+1
       END subroutine
 
 
+c  AMoro
+c  Factor to convert from P(l,m,x) = plmaux*P(l,-m,x)                    !!! without
+c      function plmaux(l,m)
+c      use factorials
+c      IMPLICIT REAL*8(A-H,O-Z)
+c      integer l,m
+c      real*8 plmaux,r
+c
+c      if (m.gt.l) then
+c         write(*,*)' plmaux:m>l!'; stop
+c      endif
+c      if (m.ge.0) then
+c        plmaux=1
+c      else
+c        R =  DLFAC(L+M)-DLFAC(L-M)
+c        plmaux=(-1)**m*exp(r)
+c      endif
+c      return
+c      end function
 
 
 
-
-
+c---------------------end calculate the p_{lm}(\theta)------------------
 
 
       end module

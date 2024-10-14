@@ -9,7 +9,7 @@
             use rot_pot
             use pot_class
             use coulfunc
-            use cleb_coefficient
+
             implicit none
 
             complex*16, dimension(:), allocatable :: scatt_amp_nuc_channel
@@ -78,6 +78,7 @@ C100             FORMAT(' l=',I4,' S-matrix is (',f10.6,' , ',f10.6, ' )')
             subroutine xsec(eta,k,fl,jmax,thetah,thetanmax)
                 use coulfunc
                 use spharm
+                use cleb_coefficient
 
                 real*8 :: eta
                 real*8 :: k
@@ -102,7 +103,8 @@ C100             FORMAT(' l=',I4,' S-matrix is (',f10.6,' , ',f10.6, ' )')
                 integer :: ich,ll
                 real*8 :: J,S
                 complex*16 :: fm1m2
-                real*8 :: cleb1,cleb2
+                real*8 :: cleb1,cleb2,Ypoly
+                integer :: Mabs
 
                 !calculate the coulomb scattering amp for different angles
                 fc_theta = 0d0
@@ -134,12 +136,18 @@ C100             FORMAT(' l=',I4,' S-matrix is (',f10.6,' , ',f10.6, ' )')
                             ll = channel_index%L(ich)
                             S = channel_index%S(ich)
                             J = channel_index%J(ich)
+
+                            Mabs = nint(abs(MI-MF))
+                            if(Mabs .gt. ll) cycle
+                            Ypoly = YLMC(ll,Mabs)*legendre_poly(ll,Mabs)
+
                             cleb1 = cleb(2*ll, 0,nint(2d0*S),nint(2d0*MI),nint(2d0*J),nint(2d0*MI))
                             cleb2 = cleb(2*ll, nint(2d0*(MI-MF)), nint(2d0*S), nint(2*MF), nint(2d0*J), nint(2*MI))
-                            fm1m2 = fm1m2 + (2d0*ll+1d0) * exp(2d0*iu*cph(ll)) 
+                            
+                            fm1m2 = fm1m2 + 2d0*sqrt(pi)*sqrt(2d0*ll+1d0) * exp(2d0*iu*cph(ll)) 
      &                                      *scatt_amp_nuc_channel(ich)
      &                                      *cleb1*cleb2
-     &                                      *legendre_poly(ll, abs(nint(MI-MF)))
+     &                                      *Ypoly
 
                         end do! end do for different channels
                         if(MI .eq. MF) then
