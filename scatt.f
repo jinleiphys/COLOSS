@@ -14,13 +14,14 @@
 
             complex*16, dimension(:), allocatable :: scatt_amp_nuc_channel
 
-
             contains
 
-            subroutine solve_scatt_green(l)
+            subroutine solve_scatt_green(ich)
+                integer :: ich
                 
-                integer :: l
                 integer :: ir 
+                integer :: l
+                real*8 :: S, J
             
                 complex*16, dimension(1:nr) :: dn
                 complex*16 :: vmod
@@ -28,17 +29,19 @@
                 complex*16 :: f_sc,f_born,ftot!different amplitudes
                 integer :: i_eigen, i_cor!iteration index
                 complex*16 :: smat
+                real*8 :: reac_xsec
+
+                l = channel_index%L(ich)
+                S = channel_index%S(ich)
+                J = channel_index%J(ich)
                 
                 dn = 0.d0
                 do i_eigen = 1,nr
                     do i_cor = 1, nr
                         vmod = V_nuc(i_cor) + V_coul(i_cor) -e2*zp*zt/mesh_rr(i_cor)/eitheta
-c                        write(*,*) "vmod is",vmod
                         dn(i_eigen) = dn(i_eigen) + 
      &                  vmod * fc_rotated(l,i_cor) * eigen_vec(i_cor,i_eigen)*sqrt(mesh_rw(i_cor))
                     end do
-
-c                    write(*,*) i_eigen,"is",dn(i_eigen)
                 end do
 
 
@@ -46,7 +49,6 @@ c                    write(*,*) i_eigen,"is",dn(i_eigen)
                 f_sc = 0.d0
                 do i_eigen = 1, nr
                     f_sc = f_sc + dn(i_eigen)**2/(ecm - eigen_val(i_eigen))
-c                    write(*,*) i_eigen,"is",dn(i_eigen)**2/(ecm - eigen_val(i_eigen))
                 end do
                 f_sc = -eitheta/ecm*f_sc
                 
@@ -59,17 +61,16 @@ c                    write(*,*) i_eigen,"is",dn(i_eigen)**2/(ecm - eigen_val(i_e
                 f_born = -f_born/ecm
 
                 ftot = f_sc + f_born
-                scatt_amp_nuc_channel(l) = ftot
+                scatt_amp_nuc_channel(ich) = ftot
                 smat = 1.d0 + 2.d0*iu*k*ftot
+                reac_xsec = pi/k/k*(2d0*l+1d0)*(1d0 - abs(smat)**2)
 
-                write(*, 300) l, real(smat), aimag(smat)
-300             FORMAT(I3,' | (',F10.6,', ',F10.6,')  | ')
-C               write(*,100) l, real(smat), aimag(smat)
-C100             FORMAT(' l=',I4,' S-matrix is (',f10.6,' , ',f10.6, ' )')
-                write(60,101) l,real(smat),aimag(smat)
-101             FORMAT('l=',I3,2f10.6) 
-                write(61,102) l,real(ftot),aimag(ftot)
-102             FORMAT('l=',I3,2f14.8)
+                write(*, 300) l,S,J, real(smat), aimag(smat), reac_xsec
+300             FORMAT(I3,3x,F3.1,2x,F5.1,' | (',F10.6,', ',F10.6,')  | ',F14.4)
+
+                write(60,101) real(smat),aimag(smat),l,S,J
+                write(61,101) real(ftot),aimag(ftot),l,S,J 
+101             FORMAT(F10.6,2x,F10.6,"  (L S J):",I3,3x,F3.1,2x,F5.1) 
 
 
                 
@@ -232,18 +233,9 @@ C100             FORMAT(' l=',I4,' S-matrix is (',f10.6,' , ',f10.6, ' )')
 
                 write(*, 300) l,S,J, real(smat), aimag(smat), reac_xsec
 300             FORMAT(I3,3x,F3.1,2x,F5.1,' | (',F10.6,', ',F10.6,')  | ',F14.4)
-C               write(*,99) l
-99              FORMAT(' l = ',I3,':')
-C               write(*,100) real(smat), aimag(smat)
-100             FORMAT(' S-matrix is (',f10.6,' , ',f10.6, ' )')
-C               write(*,111) reac_xsec
-111             FORMAT(' Partial wave reaction cross section is',f10.4,' mb')
-                write(60,101) l,real(smat),aimag(smat)
-101             FORMAT('l=',I3,2f10.6) 
-                write(61,102) l,real(ftot),aimag(ftot)
-102             FORMAT('l=',I3,2f14.8)
-
-
+                write(60,101) real(smat),aimag(smat),l,S,J
+                write(61,101) real(ftot),aimag(ftot),l,S,J 
+101             FORMAT(F10.6,2x,F10.6,"  (L S J):",I3,3x,F3.1,2x,F5.1) 
             end subroutine
 
 

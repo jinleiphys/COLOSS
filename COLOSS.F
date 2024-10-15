@@ -15,7 +15,7 @@
 
         implicit none
 
-        integer :: ich,ll
+        integer :: ich
         real*8 :: t1,t2
         
         call read_input()! read the input from the standard IO
@@ -49,11 +49,11 @@
         case(2)
                 call cpu_time(t1)
                 write(*,*) "Using Green's Function Method to Solve"
-                write(*, 202)
+                write(*,200) "L", "S", "J", "Real(Smat)", "Imag(Smat)", "Partial Wave Reac_Xsec (mb)"
                 write(*,201)
-                do ll = jmin, jmax
-                        call solve_bound(ll,input_pot)! generate the matrix value and solve the eigenvalue problem
-                        call solve_scatt_green(ll)! caclulate the scatt amplitude
+                do ich = 1, channel_index%ch_numbers
+                        call solve_bound(ich,input_pot)! generate the matrix value and solve the eigenvalue problem
+                        call solve_scatt_green(ich)! caclulate the scatt amplitude
                 end do
                 call cpu_time(t2)
         end select
