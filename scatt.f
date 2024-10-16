@@ -44,7 +44,6 @@
                     end do
                 end do
 
-
                 !calculate the f_sc
                 f_sc = 0.d0
                 do i_eigen = 1, nr
@@ -63,7 +62,7 @@
                 ftot = f_sc + f_born
                 scatt_amp_nuc_channel(ich) = ftot
                 smat = 1.d0 + 2.d0*iu*k*ftot
-                reac_xsec = pi/k/k*(2d0*l+1d0)*(1d0 - abs(smat)**2)
+                reac_xsec = pi/k/k/(2d0*S+1d0)*(2d0*J+1d0)*(1d0-abs(smat)**2)*10d0!remember to mutiply 10: convert fm^2 to mb
 
                 write(*, 300) l,S,J, real(smat), aimag(smat), reac_xsec
 300             FORMAT(I3,3x,F3.1,2x,F5.1,' | (',F10.6,', ',F10.6,')  | ',F14.4)
@@ -229,7 +228,7 @@
                 scatt_amp_nuc_channel(ich) = ftot
                 
                 smat = 1.d0 + 2.d0*iu*k*ftot
-                reac_xsec = pi/k/k*(2d0*l+1d0)*(1d0 - abs(smat)**2)
+                reac_xsec = pi/k/k/(2d0*S+1d0)*(2d0*J+1d0)*(1d0-abs(smat)**2)*10d0!remember to mutiply 10: convert fm^2 to mb
 
                 write(*, 300) l,S,J, real(smat), aimag(smat), reac_xsec
 300             FORMAT(I3,3x,F3.1,2x,F5.1,' | (',F10.6,', ',F10.6,')  | ',F14.4)
@@ -237,7 +236,6 @@
                 write(61,101) real(ftot),aimag(ftot),l,S,J 
 101             FORMAT(F10.6,2x,F10.6,"  (L S J):",I3,3x,F3.1,2x,F5.1) 
             end subroutine
-
 
 
         end module

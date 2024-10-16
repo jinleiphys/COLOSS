@@ -398,4 +398,17 @@ c *** WS derivative
 
         end function
 
+
+        function WS_nuclear_PB(r1,r2,para,twoLdotS) 
+            implicit none
+            type(pot_para) :: para
+            real*8 :: twoLdotS
+            complex*16 :: r1,r2,WS_nuclear_PB
+            complex*16 :: UU,HH
+            UU = WS_nuclear((r1+r2)/2d0,para,twoLdotS)
+            HH = exp(-(r1-r2)**2/nonlocal_beta**2)/PI**1.5/nonlocal_beta**3
+            WS_nuclear_PB = UU*HH
+
+        end function
+        
         end module rot_pot
