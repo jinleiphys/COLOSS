@@ -1,0 +1,23 @@
+&general  
+        nr=60  alpha=0 Rmax=40 ctheta=7 
+        matgauss=t bgauss=t method=1
+        backrot=f
+        numgauss = 200 rmaxgauss=100 
+        thetah=1.0 thetamax=180 /
+
+&system 
+        zp=0    massp=1   namep='n'
+        zt=26   masst=56  namet='56Fe'
+        jmin=0 jmax=10  elab=15 sp=0.5/  
+
+&pot
+        vv=46.553   rv=1.185    av=0.672
+        wv=1.777    rw=1.185    aw=0.672
+        vs=0        rvs=0       avs=0
+        ws=7.182    rws=1.288   aws=0.538
+        vsov=5.343  rsov=0.996  asov=0.590
+        vsow=-0.110 rsow=0.996  asow=0.590
+        rc=1.698 /
+
+&nonlocal_pot
+        nonlocal=t nonlocal_beta=1.0 /

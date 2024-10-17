@@ -186,7 +186,7 @@
                 real*8 :: S, J
                 complex*16,dimension(1:nr,1:nr) :: Hmat
                 complex*16,dimension(1:nr) :: B_vec,X_vec
-                integer :: ir, i_cor
+                integer :: ir, i_cor, jr
                 complex*16 :: vmod
                 real*8 :: reac_xsec
 
@@ -201,21 +201,36 @@
                 call cal_N0()
 
                 B_vec = 0d0
-                call cal_b(ich,B_vec)
+                if(nonlocal) then 
+                    call cal_b_nl(ich,B_vec)
+                else
+                    call cal_b(ich,B_vec)
+                end if
 
                 X_vec = B_vec! copy the inhomo term, and zgesv will return the result into it
-                
                 A_mat = ecm*Nmat - Hmat
 
                 call z_lineq(nr,A_mat,X_vec)
 
-                !calculate the f_born
                 f_born = 0.d0
-                do ir = 1, nr
-                    vmod = V_nuc_origin(ir) + Vcoul_origin(ir) - e2*zp*zt/mesh_rr(ir)
-                    f_born = f_born + mesh_rw(ir) * vmod * fc(l,ir)**2
-                end do
-                f_born = -f_born/ecm
+                if(nonlocal) then
+
+                    do ir = 1, nr
+                    do jr = 1, nr 
+                        vmod = V_nl_origin(ir,jr) + (Vcoul_origin(ir) - e2*zp*zt/mesh_rr(ir))*deltaij(ir,jr)
+                        f_born = f_born + mesh_rw(ir) *mesh_rw(jr) * vmod * fc(l,ir)*fc(l,jr)
+                    end do
+                    end do
+                    f_born = -f_born/ecm
+
+                else
+                    do ir = 1, nr
+                        vmod = V_nuc_origin(ir) + Vcoul_origin(ir) - e2*zp*zt/mesh_rr(ir)
+                        f_born = f_born + mesh_rw(ir) * vmod * fc(l,ir)**2
+                    end do
+                    f_born = -f_born/ecm 
+                end if
+    
 
                 !calculate the f_sc
                 f_sc = 0d0
@@ -237,5 +252,16 @@
 101             FORMAT(F10.6,2x,F10.6,"  (L S J):",I3,3x,F3.1,2x,F5.1) 
             end subroutine
 
+
+            function deltaij(ii,jj)
+                integer :: deltaij
+                integer :: ii,jj 
+                deltaij = 0
+                if(ii .eq. jj) then
+                    deltaij = 1
+                else
+                    deltaij = 0
+                end if
+            end function
 
         end module

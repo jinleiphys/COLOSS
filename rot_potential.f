@@ -12,11 +12,16 @@
             implicit none
 
             complex*16,dimension(:), allocatable :: V_nuc!rotated nuclear potential on laguerre mesh
-            complex*16,dimension(:), allocatable :: V_coul!rotated coulomb potential on laguerre mesh
-            complex*16,dimension(:), allocatable :: Vcoul_origin!original nuclear potential on laguerre mesh
             complex*16,dimension(:), allocatable :: V_nuc_origin!original nuclear potential laguerre mesh
-            complex*16,dimension(:), allocatable :: Vcoul_gauss!rotated coulomb potential on gauss mesh
             complex*16,dimension(:), allocatable :: Vnuc_gauss!rotated nuclear potential on gauss mesh
+
+            complex*16,dimension(:,:), allocatable :: V_nl
+            complex*16,dimension(:,:), allocatable :: V_nl_origin
+            complex*16,dimension(:,:), allocatable :: Vnl_gauss
+
+            complex*16,dimension(:), allocatable :: V_coul !rotated coulomb potential on laguerre mesh
+            complex*16,dimension(:), allocatable :: Vcoul_origin!original nuclear potential on laguerre mesh
+            complex*16,dimension(:), allocatable :: Vcoul_gauss!rotated coulomb potential on gauss mesh
 
             contains
 
@@ -91,26 +96,67 @@
                 allocate(V_nuc_origin(1:nr))
                 V_nuc_origin = 0.d0
                 
-
                 do ir = 1, nr
                     r  = mesh_rr(ir)*eitheta
                     V_nuc(ir) = WS_nuclear(r,para,twoLdotS)                               
-                    !write(901,*) mesh_rr(ir), real(V_nuc(ir)), aimag(V_nuc(ir))
                 end do
 
                 do ir = 1, nr
                     r  = mesh_rr(ir)
                     V_nuc_origin(ir) = WS_nuclear(r,para,twoLdotS)                              
-                    !write(902,*) mesh_rr(ir), real(V_nuc_origin(ir)), aimag(V_nuc_origin(ir))
                 end do
 
             end subroutine
 
+            subroutine rot_V_nl(para,ich)
 
-            subroutine rot_V_coul(z12,rc)
+                type(pot_para) :: para
+                integer :: ich
+
+                integer :: ir1,ir2
+                complex*16 :: r1,r2
+
+                integer :: L
+                real*8 :: J,S,twoLdotS
+
+                L = channel_index%L(ich)
+                S = channel_index%S(ich)
+                J = channel_index%J(ich)
+                twoLdotS = J*(J+1d0) - S*(S+1d0) - L*(L+1d0)
+
+                if(allocated(V_nl)) deallocate(V_nl)
+                allocate(V_nl(1:nr,1:nr))
+                V_nl = 0.d0
+
+                if(allocated(V_nl_origin)) deallocate(V_nl_origin)
+                allocate(V_nl_origin(1:nr,1:nr))
+                V_nl_origin = 0.d0
+
+                do ir1 = 1, nr
+                    r1  = mesh_rr(ir1)*eitheta
+                    do ir2 = ir1, nr
+                        r2 = mesh_rr(ir2)*eitheta
+                        V_nl(ir1,ir2) = WS_nuclear_PB(r1,r2,para,twoLdotS)      
+                        V_nl(ir2,ir1) = V_nl(ir1,ir2)                         
+                    end do
+                end do
+
+                do ir1 = 1, nr
+                    r1  = mesh_rr(ir1)
+                    do ir2 = ir1, nr
+                        r2 = mesh_rr(ir2)
+                        V_nl_origin(ir1,ir2) = WS_nuclear_PB(r1,r2,para,twoLdotS)    
+                        V_nl_origin(ir2,ir1) = V_nl_origin(ir1,ir2)                       
+                    end do
+                end do
+                
+            end subroutine
+
+
+            subroutine rot_V_coul(z12,rrc)
 
                 real*8 :: z12
-                real*8 :: rc
+                real*8 :: rrc
                 integer :: ir
                 complex*16 :: rr
 
@@ -125,9 +171,9 @@
 
                 do ir = 1,nr 
                     rr = mesh_rr(ir)*eitheta
-                    V_coul(ir) = VCOUL(rr,z12,rc)
+                    V_coul(ir) = VCOUL(rr,z12,rrc)
                     rr = mesh_rr(ir)
-                    Vcoul_origin(ir) = VCOUL(rr,z12,rc) 
+                    Vcoul_origin(ir) = VCOUL(rr,z12,rrc) 
                     !write(801,*) mesh_rr(ir),real(V_coul(ir)),aimag(V_coul(ir))
                     !write(802,*) mesh_rr(ir),real(Vcoul_origin(ir)),aimag(Vcoul_origin(ir))
                 end do
@@ -223,7 +269,6 @@ c           by doing the numerical integral with Gauss quadtrature method.
                 integer :: ir
                 complex*16 :: r
                 real*8 :: a13
-                complex*16 :: real_volume, img_volume, real_surf, img_surf
 
                 complex*16 :: nucij
                 integer :: i,j,i_cor
@@ -295,6 +340,77 @@ c           by doing the numerical integral with Gauss quadtrature method.
 
             end subroutine
 
+            subroutine nuc_mat_nl(para,ich,nucmat)
+                type(pot_para) :: para
+                integer :: ich
+                complex*16, dimension(1:nr,1:nr) :: nucmat
+                complex*16 :: nucij
+
+                integer :: L
+                real*8 :: J,S,twoLdotS
+                integer :: ir,jr,ii,jj
+                complex*16 :: r1,r2
+
+                L = channel_index%L(ich)
+                S = channel_index%S(ich)
+                J = channel_index%J(ich)
+                twoLdotS = J*(J+1d0) - S*(S+1d0) - L*(L+1d0)
+
+                if(allocated(Vnl_gauss)) deallocate(Vnl_gauss)
+                allocate(Vnl_gauss(1:numgauss,1:numgauss))
+
+                if(backrot) then 
+                    do ir = 1, numgauss
+                        r1 = gauss_rr(ir)
+                        do jr = ir, numgauss
+                            r2 = gauss_rr(jr)
+                            Vnl_gauss(ir,jr) = WS_nuclear_PB(r1,r2,para,twoLdotS)
+                            Vnl_gauss(jr,ir) = Vnl_gauss(ir,jr)
+                        end do
+                    end do 
+                else
+                    do ir = 1, numgauss
+                        r1 = gauss_rr(ir)*eitheta
+                        do jr = ir, numgauss
+                            r2 = gauss_rr(jr)*eitheta
+                            Vnl_gauss(ir,jr) = WS_nuclear_PB(r1,r2,para,twoLdotS)
+                            Vnl_gauss(jr,ir) = Vnl_gauss(ir,jr)
+                        end do
+                    end do
+                end if
+
+                nucmat = 0d0
+                if(backrot) then
+                    do ii = 1, nr
+                    do jj = ii, nr
+                        nucij = 0d0
+                        do ir = 1, numgauss
+                        do jr = 1, numgauss
+                            nucij = nucij + gauss_rw(ir)*gauss_rw(jr)/eitheta! dont forget to divide with eitheta
+     &                                 *Vnl_gauss(ir,jr)*lag_func_br(ir,ii)*lag_func_br(jr,jj)
+                        end do
+                        end do
+                        nucmat(ii,jj) = nucij
+                        nucmat(jj,ii) = nucij 
+                    end do
+                    end do
+                else
+                    do ii = 1, nr
+                    do jj = ii, nr
+                        nucij = 0d0
+                        do ir = 1, numgauss
+                        do jr = 1, numgauss
+                            nucij = nucij + eitheta*gauss_rw(ir)*gauss_rw(jr)! dont forget mutiply with eitheta
+     &                                 *Vnl_gauss(ir,jr)*lag_func(ir,ii)*lag_func(jr,jj)
+                        end do
+                        end do
+                        nucmat(ii,jj) = nucij
+                        nucmat(jj,ii) = nucij 
+                    end do
+                    end do
+                endif
+
+            end subroutine
             
 
 
