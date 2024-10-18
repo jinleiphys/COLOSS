@@ -217,13 +217,18 @@
 
                     do ir = 1, nr
                     do jr = 1, nr 
-                        vmod = V_nl_origin(ir,jr) + (Vcoul_origin(ir) - e2*zp*zt/mesh_rr(ir))*deltaij(ir,jr)
+                        vmod = V_nl_origin(ir,jr)
                         f_born = f_born + mesh_rw(ir) *mesh_rw(jr) * vmod * fc(l,ir)*fc(l,jr)
                     end do
                     end do
+
+                    do ir=1, nr
+                        vmod = Vcoul_origin(ir) - e2*zp*zt/mesh_rr(ir)
+                        f_born = f_born + mesh_rw(ir) * vmod * fc(l,ir)**2
+                    end do
                     f_born = -f_born/ecm
 
-                else
+                else! for local OMP
                     do ir = 1, nr
                         vmod = V_nuc_origin(ir) + Vcoul_origin(ir) - e2*zp*zt/mesh_rr(ir)
                         f_born = f_born + mesh_rw(ir) * vmod * fc(l,ir)**2

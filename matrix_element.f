@@ -226,7 +226,7 @@ c--------------------------------------------------------------
                 complex*16 :: VCS,rr
 
                 l = channel_index%L(ich)
-
+                B_CS = 0d0
                 !==========================================================================================
                 if(bgauss) then
                     if(backrot) then
@@ -251,6 +251,7 @@ c--------------------------------------------------------------
                 !==========================================================================================
 
 
+                B_n = 0d0
                 !==========================================================================================
                 do ii = 1, nr 
                     if(bgauss) then
@@ -258,7 +259,7 @@ c--------------------------------------------------------------
                             Btemp = 0.d0
                             do ir = 1,numgauss
                             do jr = 1,numgauss
-                                Btemp = Btemp + gauss_rw(ir)*gauss_rw(jr)*lag_func_br(jr,ii)*Vnl_gauss(jr,ir)*fc_gauss(l,ir)/eitheta
+                                Btemp = Btemp + gauss_rw(ir)*gauss_rw(jr)*lag_func_br(ir,ii)*Vnl_gauss(ir,jr)*fc_gauss(l,jr)/eitheta
                             end do
                             end do
                             B_n(ii) = Btemp

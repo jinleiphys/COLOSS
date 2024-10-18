@@ -139,9 +139,9 @@ c------------------end of nonlocal_pot namelist-----------------------
             writeouot(1) = .TRUE.
             outfile(10) = 'scaled Laguerre mesh points and weights'
             writeouot(10) = .TRUE.
-            outfile(60) = 'cross section j distribution'
+            outfile(60) = 'cross section LSJ distribution'
             writeouot(60) = .TRUE.
-            outfile(61) = 'scat amplitude j distribution'
+            outfile(61) = 'scat amplitude LSJ distribution'
             writeouot(61) = .TRUE.
             outfile(67) = 'cross section angular distribution'
             writeouot(67) = .TRUE.

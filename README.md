@@ -26,19 +26,25 @@ COLOSS utilizes the FORTRAN namelist to construct a user-friendly input format.
 - jmin, jmax(integer*4): minimum/maximum total angular momentum of the reaction system considered in the calculation
 - elab(real*8): incident kinetic energy of the projectile in the laboratory frame
 
-### Pot namelist: vv, rv, av, wv, rw, aw, vs, rvs, avs, ws, rws, aws, rc
+### Pot namelist: vv, rv, av, wv, rw, aw, vs, rvs, avs, ws, rws, aws, vsov, rsov, asov, vsow, rsow, asow, rc
 - vv, rv, av(real*8): depth, radius, and width parameters of the real volume term in OMP
 - wv, rw, aw(real*8): depth, radius, and width parameters of the imaginary volume term in OMP
 - vs, rvs, avs(real*8): depth, radius, and width parameters of the real surface term in OMP
 - ws, rws, aws(real*8): depth, radius, and width parameters of the imaginary surface term in OMP
+- vsov, rsov, asov(real*8): depth, radius, and width parameters of the real spin-orbit coupling term in OMP
+- vsow, rsow, asow(real*8): depth, radius, and width parameters of the imaginary spin-orbit coupling term in OMP
 - rc(real*8): charge radius for Coulomb interaction in OMP
+
+### nonlocal_pot namelist: nonlocal, nonlocal_beta
+- nonlocal(logical): determines whether to use a nonlocal form of OMP given in F. PEREY and B. BUCK(Nuclear Physics,32,353-380)
+- nonlocal_beta(real*8): beta parameter in F. PEREY and B. BUCK's nonlocal form of OMP
 
 ## Output description
 - fort.1: the local copy of the input file
 - fort.10: The scaled Lagrange-Laguerre mesh points and weights
-- fort.60: The S-matrices for different partial waves
-- fort.61: The nuclear scattering amplitudes for different partial waves
-- fort.67: The angular distribution of the cross section
+- fort.60: The S-matrices for different angular momentum channels
+- fort.61: The nuclear scattering amplitudes for different angular momentum channels
+- fort.67: The angular distribution of the differential cross section
 
 ## Getting started
 In **COLOSS**, we use GNU Compiler Collection(GCC). Make sure you have installed GCC. For linear algebra subroutines, we use LAPACK package.
