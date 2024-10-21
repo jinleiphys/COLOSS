@@ -15,8 +15,6 @@
         wv=1.207    rw=1.198    aw=0.669
         vs=0        rvs=0       avs=0
         ws=8.310    rws=1.282   aws=0.548
-        vsov=5.557  rsov=1.016  asov=0.590
-        vsow=-0.062 rsow=1.016  asow=0.590
         rc=1.261 /
 
 &nonlocal_pot
