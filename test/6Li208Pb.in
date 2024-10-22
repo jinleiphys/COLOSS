@@ -17,5 +17,5 @@
         ws=0 rws=0 aws=0 
         rc=1.3 /
 
-&nonlocal_pot
-        nonlocal=f nonlocal_beta=0.0 /
+&nonlocalpot
+        nonlocal=f nlbeta=0.0 /

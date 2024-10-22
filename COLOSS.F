@@ -35,6 +35,9 @@
         !call slove_np_cc(ecm)
         !call nonlocal_test()
 
+        write(60,*) "& S-matrix for differnt angular momentum channels {LSJ}"
+        write(61,*) "& Scattering amplitude for differnt angular momentum channels {LSJ}"
+
         select case(method)
         
         case(1)
@@ -47,6 +50,10 @@
                 end do
                 call cpu_time(t2)
         case(2)
+                if(nonlocal) then 
+                        write(*,*) "For nonlocal potential, Please use linear equation method"
+                        stop
+                endif
                 call cpu_time(t1)
                 write(*,*) "Using Green's Function Method to Solve"
                 write(*,200) "L", "S", "J", "Real(Smat)", "Imag(Smat)", "Partial Wave Reac_Xsec (mb)"
@@ -59,7 +66,7 @@
         end select
         write(*,201)
 
-200   FORMAT(A3,3X,A3,2X,A5,' | (',A10,', ',A10,')  | ',A28)
+200   FORMAT(A3,3X,A3,2X,A5,' |  (',A10,', ',A10,')  | ',A28)
 201   FORMAT(' ----------------------------------------------------------------------------')
 202   FORMAT(' l  | S-matrix (real, imag)     | ')
 

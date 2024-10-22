@@ -35,9 +35,9 @@ COLOSS utilizes the FORTRAN namelist to construct a user-friendly input format.
 - vsow, rsow, asow(real*8): depth, radius, and width parameters of the imaginary spin-orbit coupling term in OMP
 - rc(real*8): charge radius for Coulomb interaction in OMP
 
-### nonlocal_pot namelist: nonlocal, nonlocal_beta
-- nonlocal(logical): determines whether to use a nonlocal form of OMP given in F. PEREY and B. BUCK(Nuclear Physics,32,353-380)
-- nonlocal_beta(real*8): beta parameter in F. PEREY and B. BUCK's nonlocal form of OMP
+### nonlocalpot namelist: nonlocal, nlbeta
+- nonlocal(logical): determines whether to use a nonlocal form of OMP proposed by F. PEREY and B. BUCK(Nuclear Physics,32,353-380)
+- nlbeta(real*8): beta parameter in F. PEREY and B. BUCK's nonlocal form of OMP
 
 ## Output description
 - fort.1: the local copy of the input file

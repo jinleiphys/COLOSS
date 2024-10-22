@@ -28,6 +28,6 @@ c-------Some general parameters-------------------
                 integer :: method
 
                 logical :: nonlocal
-                real*8 :: nonlocal_beta
+                real*8 :: nlbeta
                 
         end module

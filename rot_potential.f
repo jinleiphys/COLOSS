@@ -522,7 +522,7 @@ c *** WS derivative
             complex*16 :: r1,r2,WS_nuclear_PB
             complex*16 :: UU,HH
             UU = WS_nuclear((r1+r2)/2d0,para,twoLdotS)
-            HH = exp(-(r1-r2)**2/nonlocal_beta**2)/PI**1.5/nonlocal_beta**3
+            HH = exp(-(r1-r2)**2/nlbeta**2)/PI**1.5/nlbeta**3
             WS_nuclear_PB = UU*HH
 
         end function

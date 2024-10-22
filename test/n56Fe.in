@@ -1,5 +1,5 @@
 &general  
-        nr=60  alpha=0 Rmax=50 ctheta=6 
+        nr=60  alpha=0 Rmax=50 ctheta=5 
         matgauss=t bgauss=t method=1
         backrot=t
         numgauss = 150 rmaxgauss=100 
@@ -17,5 +17,5 @@
         ws=8.310    rws=1.282   aws=0.548
         rc=1.261 /
 
-&nonlocal_pot
-        nonlocal=t nonlocal_beta=1.5 /
+&nonlocalpot
+        nonlocal=t nlbeta=1.5 /

@@ -15,5 +15,5 @@
         ws=14.247 rws=1.328 aws=0.669 
         rc=1.698 /
 
-&nonlocal_pot
-        nonlocal=f nonlocal_beta=0.0 /
+&nonlocalpot
+        nonlocal=f nlbeta=0.0 /

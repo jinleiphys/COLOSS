@@ -22,7 +22,7 @@
      &                                  vs,rvs,avs,ws,rws,aws,
      &                                  vsov,rsov,asov,vsow,rsow,asow,
      &                                  rc
-                namelist /nonlocal_pot/ nonlocal,nonlocal_beta
+                namelist /nonlocalpot/ nonlocal,nlbeta
 
 
                 write(*,*)'************************************************************'
@@ -84,8 +84,6 @@ c------------------system namelist--------------------------------------
 202             FORMAT(' Lab  Frame Energy:', f8.2, ' MeV')
                 write(*,203) ecm
 203             FORMAT(' C.M. Frame Energy:', f8.2, ' MeV')
-                write(*,204) jmin,jmax
-204             FORMAT(' Total J Range:', I3,' <= J <= ',I3)
 
 
                 write(*,*) ''
@@ -108,19 +106,19 @@ c
             
 c------------------end of potential namelist---------------------------
 
-c------------------nonlocal_pot namelist------------------------------
+c------------------nonlocalpot namelist------------------------------
 
                 nonlocal = .false.
-                nonlocal_beta = 0.d0
+                nlbeta = 0.d0
 
-                read(5,nml=nonlocal_pot)
+                read(5,nml=nonlocalpot)
 
-c------------------end of nonlocal_pot namelist-----------------------
+c------------------end of nonlocalpot namelist-----------------------
 
                 write(1,nml=general)
                 write(1,nml=system)
                 write(1,nml=pot)
-                write(1,nml=nonlocal_pot) 
+                write(1,nml=nonlocalpot) 
 
 
             end subroutine
@@ -139,7 +137,7 @@ c------------------end of nonlocal_pot namelist-----------------------
             writeouot(1) = .TRUE.
             outfile(10) = 'scaled Laguerre mesh points and weights'
             writeouot(10) = .TRUE.
-            outfile(60) = 'cross section LSJ distribution'
+            outfile(60) = 'S matrix LSJ distribution'
             writeouot(60) = .TRUE.
             outfile(61) = 'scat amplitude LSJ distribution'
             writeouot(61) = .TRUE.
