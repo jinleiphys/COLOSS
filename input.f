@@ -65,8 +65,8 @@ c------------------system namelist--------------------------------------
                 zp = 0.d0; zt = 0.d0
                 elab = 0.d0
                 sp = 0d0
-                jmin = 0
-                jmax = 0
+                lmin = 0
+                lmax = 0
 
                 read(5, nml=system)
 

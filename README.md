@@ -19,11 +19,11 @@ COLOSS utilizes the FORTRAN namelist to construct a user-friendly input format.
 - thetah(real*8): step size for the angle in the output differential cross section
 - thetamax(real*8): maximum angle in the output differential cross section
 
-### System namelist: zp, zt, massp, masst, namep, namet, jmin, jmax, elab
+### System namelist: zp, zt, massp, masst, namep, namet, lmin, lmax, elab
 - zp, zt(real*8): charge number of the projectile and the target
 - massp, masst(real*8): mass number of the projectile and the traget
 - namep, namet(character): name of the projectile and the target
-- jmin, jmax(integer*4): minimum/maximum total angular momentum of the reaction system considered in the calculation
+- lmin, lmax(integer*4): minimum/maximum total angular momentum of the reaction system considered in the calculation
 - elab(real*8): incident kinetic energy of the projectile in the laboratory frame
 
 ### Pot namelist: vv, rv, av, wv, rw, aw, vs, rvs, avs, ws, rws, aws, vsov, rsov, asov, vsow, rsow, asow, rc
@@ -66,7 +66,7 @@ To complie the program:
 &system 
     zp=1    massp=2   namep='2H'
     zt=41   masst=93  namet='93Nb'
-    jmin=0 jmax=20  elab=20   /  
+    lmin=0 lmax=20  elab=20   /  
 
 &pot 
     vv=84.323 rv=1.174 av=0.809

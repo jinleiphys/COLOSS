@@ -7,7 +7,7 @@
 &system 
         zp=2    massp=4    namep='4He'
         zt=14   masst=28   namet='28Si' 
-        jmin=0 jmax=20  elab=30   /  
+        jmin=0  jmax=20  elab=30   /  
 
 &pot
         vv=155.832 rv=1.342 av=0.658  

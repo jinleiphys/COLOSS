@@ -4,7 +4,7 @@
         thetah=1.0 thetamax=180 /
 
 &system 
-        zp=0    massp=1   namep='n'
+        zp=0   massp=1  namep='n'
         zt=0   masst=1  namet='n'
         jmin=0 jmax=10  elab=20   /  
 

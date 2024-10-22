@@ -73,7 +73,7 @@
         write(*,11) t2-t1
 11    FORMAT(20x,'(CPU  time =',F12.6,2x,'seconds)')
 
-        call xsec(real(eta),k,scatt_amp_nuc_channel,jmax,thetah,theta_n_max)
+        call xsec(real(eta),k,scatt_amp_nuc_channel,lmax,thetah,theta_n_max)
 
         call outinfo()
 

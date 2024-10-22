@@ -153,43 +153,43 @@ c---------------------------------------------------------------
 
                 !some variable for COULCC
                 integer :: NL
-                complex*16 :: zjmin
+                complex*16 :: zlmin
                 integer :: mode
                 integer :: ifail
                 
-                complex*16, dimension(0:jmax) :: gc,fcp,gcp,sig
+                complex*16, dimension(0:lmax) :: gc,fcp,gcp,sig
                 integer :: il
 
                 complex*16 :: cmplxzero
                 real*8 :: t1,t2
 
                 if(allocated(cph)) deallocate(cph)
-                allocate(cph(0:jmax))
+                allocate(cph(0:lmax))
                 cph = 0d0
-                call coulph(real(eta),cph,jmax)
+                call coulph(real(eta),cph,lmax)
 
                 if(allocated(fc_rotated)) deallocate(fc_rotated)
-                allocate(fc_rotated(0:jmax,1:nr))
+                allocate(fc_rotated(0:lmax,1:nr))
                 fc_rotated=0d0
 
                 if(allocated(fc)) deallocate(fc)
-                allocate(fc(0:jmax,1:nr))
+                allocate(fc(0:lmax,1:nr))
                 fc = 0d0
             
                 if(bgauss) then
                     if(allocated(fc_rot_gauss)) deallocate(fc_rot_gauss)
-                    allocate(fc_rot_gauss(0:jmax,1:numgauss))
+                    allocate(fc_rot_gauss(0:lmax,1:numgauss))
                     fc_rot_gauss=0d0
                 end if
 
                 if(backrot) then
                     if(allocated(fc_gauss)) deallocate(fc_gauss)
-                    allocate(fc_gauss(0:jmax,1:numgauss))
+                    allocate(fc_gauss(0:lmax,1:numgauss))
                     fc_gauss = 0d0
                 endif
 
                 mode =4
-                zjmin = 0.d0
+                zlmin = 0.d0
 
                 write(*,*)"------------------------------------------------"
                 write(*,*)'Initializing Complex Coulomb Function'
@@ -198,7 +198,7 @@ c---------------------------------------------------------------
                 
 
 
-                NL = 1+jmax
+                NL = 1+lmax
 
 
                 write(*,*)'Generating Rotated Coulomb Wave Function on Laguerre Mesh'
@@ -210,7 +210,7 @@ c---------------------------------------------------------------
                     select case(cwftype)
 
                     case(1)
-                        call COULCC(rho,eta,zjmin,NL,fc_rotated(:,i),gc,fcp,gcp,sig,mode,0,ifail)
+                        call COULCC(rho,eta,zlmin,NL,fc_rotated(:,i),gc,fcp,gcp,sig,mode,0,ifail)
                         if (ifail/=0) then
                            write(*,*) 'coul90: ifail=',ifail
                         endif
@@ -222,7 +222,7 @@ c---------------------------------------------------------------
                     
 
                     rho = k*mesh_rr(i)! no rotation always use COULCC
-                    call COULCC(rho,eta,zjmin,NL,fc(:,i),gc,fcp,gcp,sig,mode,0,ifail) 
+                    call COULCC(rho,eta,zlmin,NL,fc(:,i),gc,fcp,gcp,sig,mode,0,ifail) 
                     if (ifail/=0) then
                         write(*,*) 'coul90: ifail=',ifail
                     endif
@@ -245,7 +245,7 @@ c---------------------------------------------------------------
 
                     do i = 1, numgauss
                         rho = k*gauss_rr(i)*eitheta
-                        call COULCC(rho,eta,zjmin,NL,fc_rot_gauss(:,i),gc,fcp,gcp,sig,mode,0,ifail)
+                        call COULCC(rho,eta,zlmin,NL,fc_rot_gauss(:,i),gc,fcp,gcp,sig,mode,0,ifail)
                         if (ifail/=0) then
                             write(*,*) 'coul90: ifail=',ifail
                         endif
@@ -268,7 +268,7 @@ c---------------------------------------------------------------
                     call cpu_time(t1)
                     do i = 1, numgauss
                         rho = k*gauss_rr(i)
-                        call COULCC(rho,eta,zjmin,NL,fc_gauss(:,i),gc,fcp,gcp,sig,mode,0,ifail)
+                        call COULCC(rho,eta,zlmin,NL,fc_gauss(:,i),gc,fcp,gcp,sig,mode,0,ifail)
                         if (ifail/=0) then
                             write(*,*) 'coul90: ifail=',ifail
                         endif

@@ -11,6 +11,9 @@ c       this module define all the variable of the 3B system
             complex*16 :: eta ! the sommerfeld parameter of the 2B system
             real*8 :: k !the wave vector
 
-            integer :: jmin
-            integer :: jmax
+            integer :: lmin
+            integer :: lmax
+
+            real*8 :: jmin,jmax
+        
         end module

@@ -75,19 +75,19 @@
                 
             end subroutine
 
-            subroutine xsec(eta,k,fl,jmax,thetah,thetanmax)
+            subroutine xsec(eta,k,fl,lmax,thetah,thetanmax)
                 use coulfunc
                 use spharm
                 use cleb_coefficient
 
                 real*8 :: eta
                 real*8 :: k
-                integer :: jmax
-                complex*16, dimension(0:jmax) :: fl
+                integer :: lmax
+                complex*16, dimension(0:lmax) :: fl
                 real*8 :: thetah
                 integer :: thetanmax
 
-                real*8, dimension(0:jmax) :: cph
+                real*8, dimension(0:lmax) :: cph
                 real*8 :: cph0
 
                 complex*16, dimension(1:thetanmax) :: fc_theta
@@ -95,7 +95,7 @@
                 integer :: itheta
                 real*8 :: ang_rad
 
-                real*8, dimension(0:jmax,0:jmax) :: legendre_poly
+                real*8, dimension(0:lmax,0:lmax) :: legendre_poly
                 real*8 :: costheta
 
                 integer :: i_MI, i_MF
@@ -109,7 +109,7 @@
                 !calculate the coulomb scattering amp for different angles
                 fc_theta = 0d0
                 if(eta>0) then
-                    call coulph(eta,cph,jmax)
+                    call coulph(eta,cph,lmax)
                     cph0 = cph(0)
                     do itheta = 1, thetanmax
                         ang_rad = itheta*thetah/180d0*pi
@@ -118,13 +118,13 @@
                     end do
                 endif
 
-                call factorialgen(4*jmax)
+                call factorialgen(4*lmax)
 
                 xsec_theta = 0d0
                 do itheta = 1, thetanmax
                 ang_rad = itheta*thetah/180d0*pi
                 costheta = cos(ang_rad)
-                call PLM( costheta, jmax, jmax, jmax+1, legendre_poly )
+                call PLM( costheta, lmax, lmax, lmax+1, legendre_poly )
 
                 do i_MI = 1, nint(2*sp+1)
                     MI = -sp + (i_MI - 1)
