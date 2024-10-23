@@ -36,7 +36,11 @@
         !call nonlocal_test()
 
         write(60,*) "& S-matrix for differnt angular momentum channels {LSJ}"
-        write(61,*) "& Scattering amplitude for differnt angular momentum channels {LSJ}"
+        write(61,*) "& Scattering amplitude f for differnt angular momentum channels {LSJ}"
+
+        write(60,300) "&  Real(S)", "  Aimag(S)"
+        write(61,300) "&  Real(f)", "  Aimag(f)"
+300     FORMAT(a10,2x,a10,"  angular momentum channel") 
 
         select case(method)
         

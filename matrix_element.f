@@ -273,7 +273,7 @@ c--------------------------------------------------------------
                             B_n(ii) = Btemp
                         end if
                     else
-                        write(*,*) "Non local potentials mush use gauss quadrature!"
+                        write(*,*) "Please use Gauss-Legendre quadrature for a higher precision !"
                         stop
                     end if 
                 end do!end do for different ii

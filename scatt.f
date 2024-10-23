@@ -161,17 +161,26 @@
                 end do! end do for different angles
                 xsec_theta = xsec_theta /(2d0*sp+1d0)
                 
+                write(67,*) '& The angular distribution of the cross section'
+
                 if(eta>0) then
+                    write(67,220) '&theta(deg)', '   XSec (mb)'
                     do itheta = 1, thetanmax
                         xsec_rel_theta(itheta) = xsec_theta(itheta) / (abs(fc_theta(itheta))**2)
-                        write(67,*) itheta*thetah, xsec_rel_theta(itheta)
+                        write(67,210) itheta*thetah, xsec_rel_theta(itheta)
                     end do
                 else
+                    write(67,221) '&theta(deg)', '     XSec (mb)'
                     xsec_theta = 10d0*xsec_theta
                     do itheta = 1, thetanmax
-                        write(67,*) itheta*thetah, xsec_theta(itheta)
+                        write(67,211) itheta*thetah, xsec_theta(itheta)
                     end do
                 endif
+
+210             FORMAT(f12.2,2x,f12.4)   
+211             FORMAT(f12.2,2x,f14.4)   
+220             Format(a12,2x,a12)
+221             FORMAT(a12,2x,a14)
 
             end subroutine
 

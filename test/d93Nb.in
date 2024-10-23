@@ -6,13 +6,15 @@
 &system 
         zp=1    massp=2   namep='2H'
         zt=41   masst=93  namet='93Nb'
-        jmin=0 jmax=20  elab=20 sp=0.0/  
+        jmin=0 jmax=20  elab=20 sp=1.0/  
 
 &pot
         vv=84.323 rv=1.174 av=0.809
         wv=0.351 rw=1.563 aw=0.904
         vs=0 rvs=0 avs=0
         ws=14.247 rws=1.328 aws=0.669 
+        vsov=3.703  rsov=1.234  asov=0.813
+        vsow=-0.206 rsow=1.234  asow=0.813
         rc=1.698 /
 
 &nonlocalpot
