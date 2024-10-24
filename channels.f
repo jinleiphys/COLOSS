@@ -56,7 +56,7 @@
                     channel_index%L(ich) = il
                     channel_index%S(ich) = sp
                     channel_index%J(ich) = iJ/2d0
-                    write(11,1000) ich, channel_index%L(ich), channel_index%S(ich), channel_index%J(ich)
+                    write(2,1000) ich, channel_index%L(ich), channel_index%S(ich), channel_index%J(ich)
                     ich = ich + 1
                 end do
             end do

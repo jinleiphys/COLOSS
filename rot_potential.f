@@ -136,7 +136,7 @@
                     r1  = mesh_rr(ir1)*eitheta
                     do ir2 = ir1, nr
                         r2 = mesh_rr(ir2)*eitheta
-                        V_nl(ir1,ir2) = WS_nuclear_PB(r1,r2,para,twoLdotS)      
+                        V_nl(ir1,ir2) = WS_nuclear_PB(r1,r2,para)      
                         V_nl(ir2,ir1) = V_nl(ir1,ir2)                         
                     end do
                 end do
@@ -145,7 +145,7 @@
                     r1  = mesh_rr(ir1)
                     do ir2 = ir1, nr
                         r2 = mesh_rr(ir2)
-                        V_nl_origin(ir1,ir2) = WS_nuclear_PB(r1,r2,para,twoLdotS)    
+                        V_nl_origin(ir1,ir2) = WS_nuclear_PB(r1,r2,para)    
                         V_nl_origin(ir2,ir1) = V_nl_origin(ir1,ir2)                       
                     end do
                 end do
@@ -364,7 +364,7 @@ c           by doing the numerical integral with Gauss quadtrature method.
                         r1 = gauss_rr(ir)
                         do jr = ir, numgauss
                             r2 = gauss_rr(jr)
-                            Vnl_gauss(ir,jr) = WS_nuclear_PB(r1,r2,para,twoLdotS)
+                            Vnl_gauss(ir,jr) = WS_nuclear_PB(r1,r2,para)
                             Vnl_gauss(jr,ir) = Vnl_gauss(ir,jr)
                         end do
                     end do 
@@ -373,7 +373,7 @@ c           by doing the numerical integral with Gauss quadtrature method.
                         r1 = gauss_rr(ir)*eitheta
                         do jr = ir, numgauss
                             r2 = gauss_rr(jr)*eitheta
-                            Vnl_gauss(ir,jr) = WS_nuclear_PB(r1,r2,para,twoLdotS)
+                            Vnl_gauss(ir,jr) = WS_nuclear_PB(r1,r2,para)
                             Vnl_gauss(jr,ir) = Vnl_gauss(ir,jr)
                         end do
                     end do
@@ -514,14 +514,51 @@ c *** WS derivative
 
         end function
 
-
-        function WS_nuclear_PB(r1,r2,para,twoLdotS) 
+        function WS_SO(r,para,twoLdotS) 
             implicit none
             type(pot_para) :: para
             real*8 :: twoLdotS
+            complex*16 :: r,WS_SO
+            real*8 :: pionmass
+            complex*16 :: real_SO, img_SO
+            real*8 :: a13
+            a13 = para%a2**(1d0/3d0)
+            pionmass = 2d0
+
+            real_SO = pionmass/r*dws(r,para%vsov,para%rsov*a13,para%asov)*twoLdotS
+            img_SO = pionmass/r*dws(r,para%vsow,para%rsow*a13,para%asow)*twoLdotS
+
+            WS_SO = real_SO + iu*(img_SO)
+            return
+
+        end function
+
+
+        function WS_Exclude_SO(r,para) 
+            implicit none
+            type(pot_para) :: para
+            complex*16 :: r,WS_Exclude_SO
+            complex*16 :: real_volume, img_volume, real_surf, img_surf
+            real*8 :: a13
+            a13 = para%a2**(1d0/3d0)
+
+            real_volume = -w_s(r,para%vv,para%rvv*a13,para%avv)
+            img_volume = -w_s(r,para%wv,para%rw*a13,para%aw)
+
+            real_surf = 4.0d0*para%avs*dws(r,para%vs,para%rvs*a13,para%avs) !usually thers is no real_surf
+            img_surf = 4.0d0*para%aws*dws(r,para%ws, para%rws*a13, para%aws)
+
+            WS_Exclude_SO = real_volume + real_surf + iu*(img_surf + img_volume)
+            return
+
+        end function
+
+        function WS_nuclear_PB(r1,r2,para) 
+            implicit none
+            type(pot_para) :: para
             complex*16 :: r1,r2,WS_nuclear_PB
             complex*16 :: UU,HH
-            UU = WS_nuclear((r1+r2)/2d0,para,twoLdotS)
+            UU = WS_Exclude_SO((r1+r2)/2d0,para)
             HH = exp(-(r1-r2)**2/nlbeta**2)/PI**1.5/nlbeta**3
             WS_nuclear_PB = UU*HH
 

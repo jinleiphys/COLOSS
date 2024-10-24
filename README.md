@@ -24,6 +24,7 @@ COLOSS utilizes the FORTRAN namelist to construct a user-friendly input format.
 - massp, masst(real*8): mass number of the projectile and the traget
 - namep, namet(character): name of the projectile and the target
 - lmin, lmax(integer*4): minimum/maximum total angular momentum of the reaction system considered in the calculation
+- sp(real*8): spin of the projectile
 - elab(real*8): incident kinetic energy of the projectile in the laboratory frame
 
 ### Pot namelist: vv, rv, av, wv, rw, aw, vs, rvs, avs, ws, rws, aws, vsov, rsov, asov, vsow, rsow, asow, rc
@@ -40,7 +41,8 @@ COLOSS utilizes the FORTRAN namelist to construct a user-friendly input format.
 - nlbeta(real*8): beta parameter in F. PEREY and B. BUCK's nonlocal form of OMP
 
 ## Output description
-- fort.1: the local copy of the input file
+- fort.1: The local copy of the input file
+- fort.2: The table of all the angular momentum channles consided in the calculation.
 - fort.10: The scaled Lagrange-Laguerre mesh points and weights
 - fort.60: The S-matrices for different angular momentum channels
 - fort.61: The nuclear scattering amplitudes for different angular momentum channels
