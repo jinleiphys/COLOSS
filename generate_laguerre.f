@@ -18,6 +18,12 @@
         complex*16,dimension(:,:),allocatable :: fc_rot_gauss
         complex*16,dimension(:,:), allocatable :: fc
         complex*16,dimension(:,:), allocatable :: fc_gauss
+
+        complex*16, dimension(:,:,:), allocatable :: sb_rot
+        complex*16, dimension(:,:,:), allocatable :: sb_rot_gauss
+        complex*16, dimension(:,:,:), allocatable :: sb
+        complex*16, dimension(:,:,:), allocatable :: sb_gauss
+
         real*8,dimension(:),allocatable :: nfc,ngc!regular and irregular of Coulumb function F and G
         real*8,dimension(:),allocatable :: nfcp,ngcp!derivatives of F and G
 
@@ -83,7 +89,6 @@ c---------------------------------------------------------------
                 complex*16 :: rr
                 complex*16 :: prod
                 real*8 :: rrc
-                        
                 if(allocated(lag_func)) deallocate(lag_func)
                 allocate( lag_func(1:numgauss, 1:nr) ) 
         
@@ -148,8 +153,8 @@ c---------------------------------------------------------------
                 use coulfunc
 
                 
-                integer :: i
-                complex*16 :: rho
+                integer :: i,j
+                complex*16 :: rho,rho1,rho2
 
                 !some variable for COULCC
                 integer :: NL
@@ -162,6 +167,8 @@ c---------------------------------------------------------------
 
                 complex*16 :: cmplxzero
                 real*8 :: t1,t2
+
+                real*8 :: rhomax
 
                 if(allocated(cph)) deallocate(cph)
                 allocate(cph(0:lmax))
@@ -277,11 +284,78 @@ c---------------------------------------------------------------
                     write(*,11) t2-t1
                 endif
 
+                rhomax = 200d0
+                if(nonlocal) then
+
+                    allocate(sb_rot(0:lmax,1:nr,1:nr))
+                    allocate(sb(0:lmax,1:nr,1:nr))
+                    write(*,*) 'Generating the spherical Bessel function on Laguerre mesh'
+
+                    
+                    do i = 1, nr
+                    do j = i, nr 
+
+                        rho1 = mesh_rr(i)
+                        rho2 = mesh_rr(j)
+                        rho = -2d0*iu*rho1*rho2/nlbeta**2
+                        if(abs(rho) .lt. rhomax) then
+                            call COULCC(rho,eta,zlmin,NL,sb(:,i,j),gc,fcp,gcp,sig,mode,1,ifail)
+                        end if
+                        sb(:,j,i) = sb(:,i,j)
+
+                        rho = rho*eitheta*eitheta
+                        if(abs(rho) .lt. rhomax) then
+                            call COULCC(rho,eta,zlmin,NL,sb_rot(:,i,j),gc,fcp,gcp,sig,mode,1,ifail)
+                        end if
+                        sb_rot(:,j,i) = sb_rot(:,i,j)
+
+                    end do
+                    end do
+
+                    if(bgauss) then
+                        write(*,*) 'Generating the rotated spherical Bessel function on Gauss mesh'
+
+                        allocate(sb_rot_gauss(0:lmax,1:numgauss,1:numgauss))
+                        sb_rot_gauss = 0d0
+                        do i = 1, numgauss
+                        do j = i, numgauss
+                            rho1 = gauss_rr(i) * eitheta
+                            rho2 = gauss_rr(j) * eitheta
+                            rho = -2d0*iu*rho1*rho2/nlbeta**2
+                            if(abs(rho) .lt. rhomax) then 
+                                call COULCC(rho,eta,zlmin,NL,sb_rot_gauss(:,i,j),gc,fcp,gcp,sig,mode,1,ifail)
+                            end if
+
+                            sb_rot_gauss(:,j,i) = sb_rot_gauss(:,i,j)
+                        end do
+                        end do
+
+                    end if
+
+                    if(backrot) then 
+                        write(*,*) 'Generating the spherical Bessel function on Gauss mesh'
+
+                        allocate(sb_gauss(0:lmax,1:numgauss,1:numgauss))
+                        sb_gauss = 0d0
+                        do i = 1, numgauss
+                        do j = 1, numgauss
+                            rho1 = gauss_rr(i)
+                            rho2 = gauss_rr(j)
+                            rho = -2d0*iu*rho1*rho2/nlbeta**2
+                            if(abs(rho) .lt. rhomax) then 
+                                call COULCC(rho,eta,zlmin,NL,sb_gauss(:,i,j),gc,fcp,gcp,sig,mode,1,ifail)
+                            endif
+                            sb_gauss(:,j,i) = sb_gauss(:,i,j)
+                        end do
+                        end do
+
+                    end if
+
+                end if!end if for nonlocal
 
             end subroutine
 
 
-        
 
 
         end module

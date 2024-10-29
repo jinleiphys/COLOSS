@@ -108,6 +108,7 @@
 
                 !calculate the coulomb scattering amp for different angles
                 fc_theta = 0d0
+                cph = 0d0
                 if(eta>0) then
                     call coulph(eta,cph,lmax)
                     cph0 = cph(0)
@@ -143,7 +144,7 @@
 
                             cleb1 = cleb(2*ll, 0,nint(2d0*S),nint(2d0*MI),nint(2d0*J),nint(2d0*MI))
                             cleb2 = cleb(2*ll, nint(2d0*(MI-MF)), nint(2d0*S), nint(2*MF), nint(2d0*J), nint(2*MI))
-                            
+
                             fm1m2 = fm1m2 + 2d0*sqrt(pi)*sqrt(2d0*ll+1d0) * exp(2d0*iu*cph(ll)) 
      &                                      *scatt_amp_nuc_channel(ich)
      &                                      *cleb1*cleb2
@@ -232,7 +233,7 @@
                     end do
 
                     do ir=1, nr
-                        vmod = Vcoul_origin(ir) - e2*zp*zt/mesh_rr(ir)
+                        vmod = Vcoul_origin(ir) - e2*zp*zt/mesh_rr(ir) + V_SO_origin(ir)
                         f_born = f_born + mesh_rw(ir) * vmod * fc(l,ir)**2
                     end do
                     f_born = -f_born/ecm

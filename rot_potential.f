@@ -19,6 +19,10 @@
             complex*16,dimension(:,:), allocatable :: V_nl_origin
             complex*16,dimension(:,:), allocatable :: Vnl_gauss
 
+            complex*16,dimension(:), allocatable :: V_SO
+            complex*16,dimension(:), allocatable :: V_SO_origin
+            complex*16,dimension(:), allocatable :: V_SO_gauss
+
             complex*16,dimension(:), allocatable :: V_coul !rotated coulomb potential on laguerre mesh
             complex*16,dimension(:), allocatable :: Vcoul_origin!original nuclear potential on laguerre mesh
             complex*16,dimension(:), allocatable :: Vcoul_gauss!rotated coulomb potential on gauss mesh
@@ -132,11 +136,20 @@
                 allocate(V_nl_origin(1:nr,1:nr))
                 V_nl_origin = 0.d0
 
+                if(allocated(V_SO)) deallocate(V_SO)
+                allocate(V_SO(1:nr))
+                V_SO = 0.d0
+
+                if(allocated(V_SO_origin)) deallocate(V_SO_origin)
+                allocate(V_SO_origin(1:nr))
+                V_SO_origin = 0.d0
+
+
                 do ir1 = 1, nr
                     r1  = mesh_rr(ir1)*eitheta
                     do ir2 = ir1, nr
                         r2 = mesh_rr(ir2)*eitheta
-                        V_nl(ir1,ir2) = WS_nuclear_PB(r1,r2,para)      
+                        V_nl(ir1,ir2) = PB_nl(r1,r2,para)*(iu)**L*sb_rot(L,ir1,ir2)   
                         V_nl(ir2,ir1) = V_nl(ir1,ir2)                         
                     end do
                 end do
@@ -145,9 +158,16 @@
                     r1  = mesh_rr(ir1)
                     do ir2 = ir1, nr
                         r2 = mesh_rr(ir2)
-                        V_nl_origin(ir1,ir2) = WS_nuclear_PB(r1,r2,para)    
+                        V_nl_origin(ir1,ir2) = PB_nl(r1,r2,para)*(iu)**L*sb(L,ir1,ir2)    
                         V_nl_origin(ir2,ir1) = V_nl_origin(ir1,ir2)                       
                     end do
+                end do
+
+                do ir1 = 1, nr
+                    r1  = mesh_rr(ir1)
+                    V_SO_origin(ir1) = WS_SO(r1,para,twoLdotS)
+                    r1 = r1*eitheta
+                    V_SO(ir1) = WS_SO(r1,para,twoLdotS)
                 end do
                 
             end subroutine
@@ -343,7 +363,7 @@ c           by doing the numerical integral with Gauss quadtrature method.
             subroutine nuc_mat_nl(para,ich,nucmat)
                 type(pot_para) :: para
                 integer :: ich
-                complex*16, dimension(1:nr,1:nr) :: nucmat
+                complex*16, dimension(1:nr,1:nr) :: nucmat,SOmat
                 complex*16 :: nucij
 
                 integer :: L
@@ -364,7 +384,7 @@ c           by doing the numerical integral with Gauss quadtrature method.
                         r1 = gauss_rr(ir)
                         do jr = ir, numgauss
                             r2 = gauss_rr(jr)
-                            Vnl_gauss(ir,jr) = WS_nuclear_PB(r1,r2,para)
+                            Vnl_gauss(ir,jr) = PB_nl(r1,r2,para)*(iu)**L*sb_gauss(L,ir,jr)
                             Vnl_gauss(jr,ir) = Vnl_gauss(ir,jr)
                         end do
                     end do 
@@ -373,9 +393,23 @@ c           by doing the numerical integral with Gauss quadtrature method.
                         r1 = gauss_rr(ir)*eitheta
                         do jr = ir, numgauss
                             r2 = gauss_rr(jr)*eitheta
-                            Vnl_gauss(ir,jr) = WS_nuclear_PB(r1,r2,para)
+                            Vnl_gauss(ir,jr) = PB_nl(r1,r2,para)*(iu)**L*sb_rot_gauss(L,ir,jr)
                             Vnl_gauss(jr,ir) = Vnl_gauss(ir,jr)
                         end do
+                    end do
+                end if
+
+                if(allocated(V_SO_gauss)) deallocate(V_SO_gauss)
+                allocate(V_SO_gauss(1:numgauss))
+                if(backrot) then
+                    do ir = 1, numgauss
+                        r1 = gauss_rr(ir)
+                        V_SO_gauss(ir) = WS_SO(r1,para,twoLdotS)
+                    end do
+                else
+                    do ir = 1, numgauss
+                        r1 = gauss_rr(ir)*eitheta
+                        V_SO_gauss(ir) = WS_SO(r1,para,twoLdotS)
                     end do
                 end if
 
@@ -409,6 +443,34 @@ c           by doing the numerical integral with Gauss quadtrature method.
                     end do
                     end do
                 endif
+
+                SOmat = 0d0
+                if(backrot) then 
+                    do ii = 1, nr
+                    do jj = ii, nr
+                        nucij = 0d0
+                        do ir = 1, numgauss
+                            nucij = nucij + gauss_rw(ir)*V_SO_gauss(ir)*lag_func_br(ir,ii)*lag_func_br(ir,jj)
+                        end do
+                        SOmat(ii,jj) = nucij/eitheta
+                        SOmat(jj,ii) = SOmat(ii,jj)
+                    end do
+                    end do
+                else
+                    do ii = 1, nr
+                    do jj = ii, nr
+                        nucij = 0d0
+                        do ir = 1, numgauss
+                            nucij = nucij + gauss_rw(ir)*V_SO_gauss(ir)*lag_func(ir,ii)*lag_func(ir,jj)
+                        end do
+                        SOmat(ii,jj) = nucij
+                        SOmat(jj,ii) = nucij
+                    end do
+                    end do
+                    
+                end if
+
+                nucmat = nucmat + SOmat
 
             end subroutine
             
@@ -553,15 +615,14 @@ c *** WS derivative
 
         end function
 
-        function WS_nuclear_PB(r1,r2,para) 
+        function PB_nl(r1,r2,para)
             implicit none
+            complex*16 :: r1,r2,PB_nl
             type(pot_para) :: para
-            complex*16 :: r1,r2,WS_nuclear_PB
             complex*16 :: UU,HH
             UU = WS_Exclude_SO((r1+r2)/2d0,para)
-            HH = exp(-(r1-r2)**2/nlbeta**2)/PI**1.5/nlbeta**3
-            WS_nuclear_PB = UU*HH
-
+            HH = exp(-(r1**2 + r2**2)/nlbeta**2)
+            PB_nl = 4d0*r1*r2/sqrt(PI)/nlbeta**3*UU*HH
         end function
         
         end module rot_pot

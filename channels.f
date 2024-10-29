@@ -47,7 +47,7 @@
             allocate(channel_index%S(1:channel_index%ch_numbers))
             allocate(channel_index%J(1:channel_index%ch_numbers))
 
-            write(11, '(A5, 2X, A5, 2X, A5, 2X, A5)') 'ich', 'L', 'S', 'J'
+            write(2, '(A5, 2X, A5, 2X, A5, 2X, A5)') 'ich', 'L', 'S', 'J'
             ich = 1
             do il = lmin, lmax
                 do iJ = nint(2 * abs(il - sp)), nint(2 * (il + sp)), 2

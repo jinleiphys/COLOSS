@@ -86,27 +86,31 @@ c--------------------------------------------------------------
                 z12 = zt*zp
                 
                 !calculate Coulomb potentials and matrix elements
-                call rot_V_coul(z12,rrc)!calculate the array of coulomb potential on laggurre mesh
+                call rot_V_coul(z12,rrc)
                 if(matgauss) then
-                    call coul_mat_gauss(z12,rrc,coul_matrix)!use gauss quad. to evaluate the coulomb matrix elements
+                    call coul_mat_gauss(z12,rrc,coul_matrix)
                 else
                     do ir = 1, nr
-                        coul_matrix(ir,ir) = V_coul(ir)!use the approx. for lagrange func. to evaluate the coulomb marix elements
+                        coul_matrix(ir,ir) = V_coul(ir)
                     end do
-                endif !end if for matgauss
+                endif
 
                 !calculate nuclear potentials and matrix elements
                 if (nonlocal) then
                     call rot_V_nl(para,ich)
                     if(matgauss) then
                         call nuc_mat_nl(para,ich,nuc_matrix)
-                    else
+                    else! use the lagrange function's approximation
                         do ir = 1, nr
                         do jr = ir, nr
-                                nuc_matrix(ir,jr) = eitheta*sqrt(mesh_rw(ir) * mesh_rw(jr))*V_nl(ir,jr)
+                                nuc_matrix(ir,jr) = eitheta*sqrt(mesh_rw(ir) * mesh_rw(jr)) * V_nl(ir,jr)
                                 nuc_matrix(jr,ir) = nuc_matrix(ir,jr)
-                        end do !end for jr
+                        end do ! end for jr
                         end do ! end for ir
+
+                        do ir = 1,nr 
+                            nuc_matrix(ir,ir) = nuc_matrix(ir,ir) + V_SO(ir)
+                        end do
                     end if!end if for matgauss
 
 
@@ -232,14 +236,14 @@ c--------------------------------------------------------------
                     if(backrot) then
                         do ii = 1, nr
                             do ir = 1,numgauss
-                                VCS = Vcoul_gauss(ir) -e2*zp*zt/gauss_rr(ir)
+                                VCS = Vcoul_gauss(ir) -e2*zp*zt/gauss_rr(ir) + V_SO_gauss(ir)
                                 B_CS(ii) = B_CS(ii) + gauss_rw(ir)*lag_func_br(ir,ii)*VCS*fc_gauss(l,ir)/eitheta
                             end do
                         end do
                     else
                         do ii = 1, nr
                             do ir = 1,numgauss
-                                VCS = Vcoul_gauss(ir) -e2*zp*zt/gauss_rr(ir)/eitheta
+                                VCS = Vcoul_gauss(ir) -e2*zp*zt/gauss_rr(ir)/eitheta + V_SO_gauss(ir)
                                 B_CS(ii) = B_CS(ii) + gauss_rw(ir)*lag_func(ir,ii)*VCS*fc_rot_gauss(l,ir)
                             end do
                         end do
