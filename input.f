@@ -135,6 +135,8 @@ c------------------end of nonlocalpot namelist-----------------------
 
             outfile(1) = 'local copy of input'
             writeouot(1) = .TRUE.
+            outfile(2) = 'list of channel index'
+            writeouot(2) = .TRUE.
             outfile(10) = 'scaled Laguerre mesh points and weights'
             writeouot(10) = .TRUE.
             outfile(60) = 'S matrix LSJ distribution'

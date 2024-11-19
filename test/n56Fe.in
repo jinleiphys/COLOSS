@@ -8,7 +8,7 @@
 &system 
         zp=0    massp=1   namep='n'
         zt=26   masst=56  namet='56Fe'
-        jmin=0 jmax=15  elab=15.0 sp=0.5/  
+        jmin=0 jmax=12  elab=15.0 sp=0.5/  
 
 &pot
         vv=53.662   rv=1.198    av=0.669

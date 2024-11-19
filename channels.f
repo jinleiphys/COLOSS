@@ -47,6 +47,7 @@
             allocate(channel_index%S(1:channel_index%ch_numbers))
             allocate(channel_index%J(1:channel_index%ch_numbers))
 
+            write(2,*) "& The list for all the channels {LSJ}"
             write(2, '(A5, 2X, A5, 2X, A5, 2X, A5)') 'ich', 'L', 'S', 'J'
             ich = 1
             do il = lmin, lmax

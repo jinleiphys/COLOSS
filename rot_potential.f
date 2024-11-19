@@ -71,6 +71,11 @@
 111             format('  Vv     rvv    avv    Wv     rw     aw', /,6f7.3,/)
 112             format('  Vs     rvs    avs    Ws     rws    aws',/,6f7.3,/)
 113             format('  Vsov   rsov   asov   vsow   rsow   asow',/,6f7.3,/) 
+                if(nonlocal) then
+                    write(*,*) 'Using Perey-Buck nonlocal form'
+                    write(*,114) nlbeta
+                end if
+114             format(' The nonlocal range is ',f7.3,' fm')
             end subroutine
 
 
