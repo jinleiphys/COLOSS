@@ -16,7 +16,9 @@
         implicit none
 
         integer :: ich
-        real*8 :: t1,t2
+        real*8 :: t1,t2,t0,te
+
+        call cpu_time(t0)
         
         call read_input()! read the input from the standard IO
 
@@ -76,10 +78,13 @@
 
         write(*,11) t2-t1
 11    FORMAT(20x,'(CPU  time =',F12.6,2x,'seconds)')
+12    FORMAT(10x,'Total CPU  time =',F12.6,2x,'seconds')
 
         call xsec(real(eta),k,scatt_amp_nuc_channel,lmax,thetah,theta_n_max)
 
         call outinfo()
+        call cpu_time(te)
+        write(*,12) te-t0
 
         call printconstants
         call write_verison()
