@@ -2,7 +2,7 @@
         nr=50  alpha=0 Rmax=40 ctheta=7 
         matgauss=t bgauss=t method=1
         backrot=t
-        numgauss = 100 rmaxgauss=70 
+        numgauss = 70 rmaxgauss=70 
         thetah=1.0 thetamax=180 /
 
 &system 

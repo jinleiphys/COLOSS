@@ -57,25 +57,30 @@ To complie the program:
 - Transfer the executable program, **COLOSS**, to the test directory, and initiate program execution through standard input:
 `prompt> ./COLOSS < inpufile`
 
-## Examples for 93Nb(d,d)93Nb at 20MeV
+## Examples for 40Ca(n,n)40Ca at 20MeV
 ### Input
 ```
 &general  
-    nr=60  alpha=0 Rmax=40 ctheta=6 
-    matgauss=f bgauss=f method=1
-    thetah=1.0 thetamax=180 /
+        nr=60  alpha=0 Rmax=40 ctheta=7 
+        matgauss=f bgauss=f method=1
+        thetah=1.0 thetamax=180 /
 
 &system 
-    zp=1    massp=2   namep='2H'
-    zt=41   masst=93  namet='93Nb'
-    lmin=0 lmax=20  elab=20   /  
+        zp=0    massp=1   namep='n'
+        zt=20   masst=40  namet='40Ca'
+        jmin=0 jmax=10  elab=20 sp=0.5/  
 
-&pot 
-    vv=84.323 rv=1.174 av=0.809
-    wv=0.351 rw=1.563 aw=0.904
-    vs=0 rvs=0 avs=0
-    ws=14.247 rws=1.328 aws=0.669 
-    rc=1.698 /
+&pot
+        vv=46.553   rv=1.185    av=0.672
+        wv=1.777    rw=1.185    aw=0.672
+        vs=0        rvs=0       avs=0
+        ws=7.182    rws=1.288   aws=0.538
+        vsov=5.343  rsov=0.996  asov=0.590
+        vsow=-0.110 rsow=0.996  asow=0.590
+        rc=1.698 /
+
+&nonlocalpot
+        nonlocal=f nlbeta=0.0 /
 
 ```
 
@@ -86,71 +91,79 @@ To complie the program:
  *          Optical and couLOmb Scattering Solver           *
  ************************************************************
  
- Rotation Angle for Complex Scaling:  6.00 degrees
+ Rotation Angle for Complex Scaling:  7.00 degrees
  Rotation Operation: Applied to Potential
  
  -------------------Reaction system-------------------
-   Projectile:  2H    (A:     2.00 Z:    1.00)
-       Target:  93Nb  (A:    93.00 Z:   41.00)
+   Projectile:  n     (A:     1.00 Z:    0.00)
+       Target:  40Ca  (A:    40.00 Z:   20.00)
  Lab  Frame Energy:   20.00 MeV
- C.M. Frame Energy:   19.58 MeV
- Total J Range:  0 <= J <=  20
+ C.M. Frame Energy:   19.51 MeV
  
+ Generating the channel index
+ There are   20 different channels 
+ Total J Range:  0.0 <= J <=  10.0
+
  -------------- Lagrange-Laguerre Mesh --------------
  Laguerre Polynomial Order:  60
  Laguerre Mesh Max Value: Scaled from   219.3181 to    40.0000
  Scaling Factor:    0.1824 (fm)
  
  ------------- Optical Model Potential -------------
- Optical Potential for A =  93.0 Z = 41.0 at  20.000 MeV rc =  1.698
+ Optical Potential for A =  40.0 Z = 20.0 at  20.000 MeV rc =  1.698
   Vv     rvv    avv    Wv     rw     aw
- 84.323  1.174  0.809  0.351  1.563  0.904
+ 46.553  1.185  0.672  1.777  1.185  0.672
 
   Vs     rvs    avs    Ws     rws    aws
-  0.000  0.000  0.000 14.247  1.328  0.669
+  0.000  0.000  0.000  7.182  1.288  0.538
+
+  Vsov   rsov   asov   vsow   rsow   asow
+  5.343  0.996  0.590 -0.110  0.996  0.590
 
  ------------------------------------------------
  Initializing Complex Coulomb Function
- Sommerfeld Parameter:    2.0419
+ Sommerfeld Parameter:    0.0000
  Generating Rotated Coulomb Wave Function on Laguerre Mesh
-                    (CPU  time =  0.00051300  seconds)
+                    (CPU  time =  0.00025700  seconds)
  
  Using Linear Equation Method to Solve
- l  |   S-matrix (real, imag)   | Partial Wave Reaction Cross Section (mb)
- -----------------------------------------------------------------------
-  0 | ( -0.105887,  -0.084723)  |     1.6814
-  1 | (  0.060705,   0.092842)  |     5.0755
-  2 | (  0.118453,  -0.060172)  |     8.4134
-  3 | ( -0.084936,  -0.028826)  |    11.8939
-  4 | ( -0.120555,   0.095725)  |    15.0509
-  5 | (  0.013458,  -0.016254)  |    18.8336
-  6 | (  0.041922,  -0.194055)  |    21.3901
-  7 | (  0.117786,  -0.102841)  |    25.0654
-  8 | (  0.385315,  -0.007029)  |    24.7947
-  9 | (  0.569733,   0.074756)  |    21.7993
- 10 | (  0.800504,   0.118034)  |    12.4194
- 11 | (  0.926720,   0.072771)  |     5.3538
- 12 | (  0.975106,   0.034918)  |     2.0533
- 13 | (  0.991320,   0.015328)  |     0.7885
- 14 | (  0.996870,   0.006580)  |     0.3083
- 15 | (  0.998845,   0.002806)  |     0.1222
- 16 | (  0.999566,   0.001194)  |     0.0490
- 17 | (  0.999835,   0.000507)  |     0.0198
- 18 | (  0.999936,   0.000215)  |     0.0081
- 19 | (  0.999975,   0.000091)  |     0.0033
- 20 | (  0.999990,   0.000039)  |     0.0014
- -----------------------------------------------------
-                    (CPU  time =    0.004426  seconds)
+  L     S      J |  (Real(Smat), Imag(Smat))  |  Partial Wave Reac_Xsec (mb)
+ ----------------------------------------------------------------------------
+  0   0.5    0.5 |  (  0.349804,   0.223235)  |        28.5534
+  1   0.5    0.5 |  (  0.508537,   0.041797)  |        25.5125
+  1   0.5    1.5 |  (  0.479616,   0.195699)  |        50.4749
+  2   0.5    1.5 |  (  0.321689,  -0.152658)  |        60.2393
+  2   0.5    2.5 |  (  0.392012,   0.086108)  |        86.8096
+  3   0.5    2.5 |  ( -0.032075,  -0.496351)  |        77.8789
+  3   0.5    3.5 |  (  0.317075,  -0.310480)  |       110.8004
+  4   0.5    3.5 |  ( -0.134338,  -0.189716)  |       130.5159
+  4   0.5    4.5 |  (  0.171986,  -0.508775)  |       122.7206
+  5   0.5    4.5 |  (  0.448912,   0.217764)  |       129.5308
+  5   0.5    5.5 |  (  0.219593,   0.066785)  |       196.0549
+  6   0.5    5.5 |  (  0.878907,   0.126747)  |        43.7629
+  6   0.5    6.5 |  (  0.839528,   0.167094)  |        64.5332
+  7   0.5    6.5 |  (  0.977509,   0.037757)  |        10.3944
+  7   0.5    7.5 |  (  0.975107,   0.047042)  |        12.9563
+  8   0.5    7.5 |  (  0.995748,   0.009952)  |         2.3144
+  8   0.5    8.5 |  (  0.995614,   0.011765)  |         2.6742
+  9   0.5    8.5 |  (  0.999183,   0.002546)  |         0.5053
+  9   0.5    9.5 |  (  0.999178,   0.002913)  |         0.5636
+ 10   0.5    9.5 |  (  0.999841,   0.000644)  |         0.1093
+ ----------------------------------------------------------------------------
+                    (CPU  time =    0.003733  seconds)
  
 ----------------- Files Created -----------------
   1: local copy of input.                         
+  2: list of channel index.                       
  10: scaled Laguerre mesh points and weights.     
- 60: cross section j distribution.                
- 61: scat amplitude j distribution.               
+ 60: S matrix LSJ distribution.                   
+ 61: scat amplitude LSJ distribution.             
  67: cross section angular distribution.          
+          Total CPU  time =    0.029168  seconds
   
  ***************** CONSTANTS **********************
  * hbarc=197.32697 MeV.fm     e^2= 1.43997 MeV.fm *
  * so, alpha= 1/137.03547       amu=931.4943 MeV  *
  **************************************************
+ 
 ```
