@@ -124,7 +124,7 @@
                 do ir = 1, nr
                     r  = mesh_rr(ir)
                     if(readinpot) then
-                        V_nuc_origin(ir) = cfival(real(r),xv,Uread,readlenth+1,0d0)
+                        V_nuc_origin(ir) = cfival(real(r),xv,Uread,readlenth,0d0)
                     else
                     V_nuc_origin(ir) = WS_nuclear(r,para,twoLdotS)      
                     end if                        
@@ -331,7 +331,7 @@ c           by doing the numerical integral with Gauss quadtrature method.
                 do ir = 1, numgauss
                     r  = gauss_rr(ir)
                     if(readinpot) then
-                        Vnuc_gauss(ir) = cfival(real(r),xv,Uread,readlenth+1,0d0) 
+                        Vnuc_gauss(ir) = cfival(real(r),xv,Uread,readlenth,0d0) 
                     else
                         Vnuc_gauss(ir) = WS_nuclear(r,para,twoLdotS)
                     end if

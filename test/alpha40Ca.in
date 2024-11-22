@@ -3,15 +3,19 @@
         matgauss=t bgauss=t method=1
         backrot=t
         numgauss = 100 rmaxgauss=50
-        thetah=1.0 thetamax=180 readinpot=t/
+        thetah=1.0 thetamax=180/
 
 &system 
         zp=2    massp=4   namep='4He'
         zt=20   masst=40  namet='40Ca'
-        jmin=0 jmax=15  elab=20 sp=0/  
+        jmin=0 jmax=15  elab=20 /  
 
 &pot
-        rc=1.698 /
+        vv=46.553   rv=1.185    av=0.672
+        wv=1.777    rw=1.185    aw=0.672
+        vs=0        rvs=0       avs=0
+        ws=7.182    rws=1.288   aws=0.538
+        rc=1.698/
 
 &nonlocalpot
         nonlocal=f nlbeta=0.0 /

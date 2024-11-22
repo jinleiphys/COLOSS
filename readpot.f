@@ -58,6 +58,7 @@ c           Next lines: real, imag
             read(kpot,*) npt,rstep,rfirst
             
             readlenth = npt
+            npt = npt - 1
             allocate(faux(0:npt),haux(0:npt),xv(0:npt))
             allocate(Uread(0:npt))
             faux=0d0; haux(:)=0d0; xv(:)=0d0; Uread(:)=0d0
@@ -69,7 +70,7 @@ c           Next lines: real, imag
                 Uread(n) = complex(y1,y2)
             enddo
 
-            write(*,'(3x,"=> read:",i4," points")') npt
+            write(*,'(3x,"=> read:",i4," points")') npt+1
             write(*,250) xv(0),xv(npt),xv(2)-xv(1)
 250         format(/,2x,"[Radial grid: Rmin=",1f7.3," fm,", " Rmax=",1f7.1," fm,", " Step=",1f7.3," fm]",/)
 
