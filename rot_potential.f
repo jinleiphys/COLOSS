@@ -7,6 +7,8 @@
             use mesh
             use generate_laguerre
             use channels
+            use readpot
+            use interpolation
 
 
             implicit none
@@ -33,6 +35,18 @@
                 real*8 :: E
                 type(pot_para) :: para
 
+                para%rc=0d0
+                para%rc=rc
+
+                if(readinpot) then
+                        if(.not. backrot) then
+                            write(*,*) "Must use back rotation when reading in potential!"
+                            stop
+                        end if
+                        call extpot("pot.dat")
+                        return
+                end if
+
                 para%a1 = massp
                 para%a2 = masst
                 para%z1 = zp
@@ -45,7 +59,6 @@
                 
                 para%ws=0d0; para%rws=0d0; para%aws=0d0
                 
-                para%rc=0d0
 
                 para%vv=vv; para%rvv=rv; para%avv=av
                 
@@ -58,8 +71,6 @@
                 para%vsov=vsov; para%rsov=rsov; para%asov=asov
 
                 para%vsow=vsow; para%rsow=rsow; para%asow=asow
-
-                para%rc=rc
 
                 write(*,*) '------------- Optical Model Potential -------------'
                 write(*,20) masst, zt, elab, para%rc
@@ -112,7 +123,11 @@
 
                 do ir = 1, nr
                     r  = mesh_rr(ir)
-                    V_nuc_origin(ir) = WS_nuclear(r,para,twoLdotS)                              
+                    if(readinpot) then
+                        V_nuc_origin(ir) = cfival(real(r),xv,Uread,readlenth+1,0d0)
+                    else
+                    V_nuc_origin(ir) = WS_nuclear(r,para,twoLdotS)      
+                    end if                        
                 end do
 
             end subroutine
@@ -315,7 +330,11 @@ c           by doing the numerical integral with Gauss quadtrature method.
                 !calculate the rotated optical potential on the gauss mesh
                 do ir = 1, numgauss
                     r  = gauss_rr(ir)
-                    Vnuc_gauss(ir) = WS_nuclear(r,para,twoLdotS)                               
+                    if(readinpot) then
+                        Vnuc_gauss(ir) = cfival(real(r),xv,Uread,readlenth+1,0d0) 
+                    else
+                        Vnuc_gauss(ir) = WS_nuclear(r,para,twoLdotS)
+                    end if
                 end do
 
                 else

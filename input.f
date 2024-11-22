@@ -4,6 +4,7 @@
             use precision
             use constants
             use pot_class
+            use readpot
             use rot_pot
 
             implicit none
@@ -13,7 +14,7 @@
 
                 namelist /general/ ctheta,alpha,nr,rmax,numgauss,rmaxgauss,backrot,
      &                                 matgauss,thetah,thetamax,
-     &                                 bgauss,cwftype,method
+     &                                 bgauss,cwftype,method,readinpot
 
                 namelist /system/ zp,massp,namep,zt,masst,namet,elab,jmax,jmin,sp
 
@@ -37,7 +38,7 @@ c------------------general namelist-------------------------------------
                 bgauss = .false.
                 thetah=1.d0; thetamax=90.d0
                 cwftype=1
-                backrot=.false.
+                backrot=.false.; readinpot=.false.
                 method=1
             
                 read(5, nml=general)

@@ -13,13 +13,13 @@ VERREV := $(shell git log -1 --pretty=format:"%h")
 COMPDATE :=$(shell date)
 
 # define the compiling options
-FFLAGS = -O2 -Wtabs -fopenmp -Wconversion -ffixed-line-length-0 -cpp -fPIC\
+FFLAGS = -g -Wtabs -fopenmp -Wconversion -ffixed-line-length-0 -cpp -fPIC\
 -DBASE=\"$(BASE)\" -DVERDATE='"$(VERDATE)"' -DVERREV='"$(VERREV)"' -DCOMPDATE='"$(COMPDATE)"' 
 
 # define the object files
 OBJF = precision.o constants.o system.o mesh.o pot_class.o \
-clebsch.o spharm.o gauss_mesh.o channels.o \
-gauss.o coulcc.o coul90.o\
+clebsch.o spharm.o gauss_mesh.o channels.o readpot.o\
+gauss.o coulcc.o coul90.o interpolation.o\
 generate_laguerre.o rot_potential.o \
 solve_eigen.o input.o \
 matrix_element.o bound.o npcc.o yamaguchi.o scatt.o  

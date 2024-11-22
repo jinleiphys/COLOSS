@@ -13,11 +13,12 @@ COLOSS utilizes the FORTRAN namelist to construct a user-friendly input format.
 - bgauss(logical): determines whether to use the Gauss-Legendre quadrature to evaluate the inhomogeneous terms in the linear equation
 - numgauss(integer*4): number of Gauss-Legendre mesh points
 - rmaxgauss(real*8): maximum radius of the Gauss-Legendre mesh points
-- method(integer*4): option for 2 different method to calculate the scattering amplitude, set it as 1 for linear equation method, and 2 for the Green's function method
+- method(integer*4): options for 2 different method to calculate the scattering amplitude, set it as 1 for linear equation method, and 2 for the Green's function method
 - backrot(logical): determines whether to rotate the basis backward or to rotate the potential directly in the calculation
 - cwftype(integer*4): options for 2 different subroutines to calculate Coulomb wave functions. Set it as 1 to call COULCC, and 2 to call cwfcomplex
 - thetah(real*8): step size for the angle in the output differential cross section
 - thetamax(real*8): maximum angle in the output differential cross section
+- readinpot(logical): determines whether to read the potential from external file 'pot.dat'
 
 ### System namelist: zp, zt, massp, masst, namep, namet, lmin, lmax, elab
 - zp, zt(real*8): charge number of the projectile and the target

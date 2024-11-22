@@ -98,8 +98,11 @@ c---------------------------------------------------------------
                         
                 rrc = input_pot%rc*masst**(1d0/3d0)
 
-                call TRNS(numgauss/2, numgauss/2, numgauss,rrc,20d0,rmaxgauss,gauss_rr, gauss_rw)
-c                call gauleg(numgauss, 0.d0, rmaxgauss, gauss_rr, gauss_rw)
+                if(rrc < 1e-4) then
+                    call gauleg(numgauss, 0.d0, rmaxgauss, gauss_rr, gauss_rw)
+                else
+                    call TRNS(numgauss/2, numgauss/2, numgauss,rrc,20d0,rmaxgauss,gauss_rr, gauss_rw)
+                end if            
         
                 do i_basis = 1,nr
                         do i_cor = 1, numgauss

@@ -25,6 +25,7 @@ c-------Some general parameters-------------------
                 real*8 :: thetah, thetamax
                 integer :: theta_n_max
 
+                logical :: readinpot
                 integer :: method
 
                 logical :: nonlocal
