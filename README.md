@@ -1,5 +1,5 @@
 # COLOSS
-**COLOSS** is a program designed to address the scattering problem using a bound-state technique known as complex scaling. In this method, the oscillatory boundary conditions of the wave function are transformed into exponentially decaying ones, accommodating the long-range Coulomb interaction. This program implements the Woods-Saxon form of a realistic optical potential, with all potential parameters included in a well-designed input format for ease of use. This design offers users straightforward access to compute \(S\)-matrices and cross-sections of the scattering process. Here we use the Lagrange-Laguerre functions as the basis functions, and provide two method to perform the numerical integration. One is based on the approximation of Lagrange functions, and the other is the direct Gauss-Legendre quadrature. Additionally, COLOSS incorporates two distinct rotation methods, making it adaptable to potentials without analytical expressions. 
+**COLOSS** is a program designed to address the scattering problem using a bound-state technique known as complex scaling. In this method, the oscillatory boundary conditions of the wave function are transformed into exponentially decaying ones, accommodating the long-range Coulomb interaction. This program implements the general local optical model potential and the Perey-Buck nonlocal optical potential with all parameters included in a well-designed input format for ease of use. This design offers users straightforward access to compute \(S\)-matrices and cross-sections of the scattering process. Here we use the Lagrange-Laguerre functions as the basis functions, and provide two method to perform the numerical integration. One is based on the approximation of Lagrange functions, and the other is the direct Gauss-Legendre quadrature. Additionally, COLOSS incorporates two distinct rotation methods, making it adaptable to potentials without analytical expressions. 
 
 ## Input description
 COLOSS utilizes the FORTRAN namelist to construct a user-friendly input format. 
@@ -18,13 +18,13 @@ COLOSS utilizes the FORTRAN namelist to construct a user-friendly input format.
 - cwftype(integer*4): options for 2 different subroutines to calculate Coulomb wave functions. Set it as 1 to call COULCC, and 2 to call cwfcomplex
 - thetah(real*8): step size for the angle in the output differential cross section
 - thetamax(real*8): maximum angle in the output differential cross section
-- readinpot(logical): determines whether to read the potential from external file 'pot.dat'
+- readinpot(logical): determines whether to import the potential from external file 'pot.dat', please set backrot as t when using this option
 
 ### System namelist: zp, zt, massp, masst, namep, namet, lmin, lmax, elab
 - zp, zt(real*8): charge number of the projectile and the target
 - massp, masst(real*8): mass number of the projectile and the traget
 - namep, namet(character): name of the projectile and the target
-- lmin, lmax(integer*4): minimum/maximum total angular momentum of the reaction system considered in the calculation
+- jmin, jmax(integer*4): minimum/maximum total angular momentum of the reaction system considered in the calculation
 - sp(real*8): spin of the projectile
 - elab(real*8): incident kinetic energy of the projectile in the laboratory frame
 
