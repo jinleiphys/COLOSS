@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COLOSS Input Generator</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .bg-nuclear {
+      background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+    }
+    .card {
+      backdrop-filter: blur(10px);
+      background-color: rgba(255, 255, 255, 0.9);
+    }
+    .input-group label {
+      display: inline-block;
+      width: 180px;
+      text-align: right;
+      margin-right: 10px;
+    }
+    .input-group input, .input-group select {
+      width: 120px;
+    }
+  </style>
+</head>
+<body class="bg-nuclear min-h-screen text-gray-800">
+  <div class="container mx-auto px-4 py-8">
+    <header class="mb-8 text-center">
+      <h1 class="text-4xl font-bold mb-2 text-white">COLOSS Input Generator</h1>
+      <p class="text-xl text-gray-300 mb-4">Complex-scaled Optical and couLOmb Scattering Solver</p>
+    </header>
+
+    <!-- Tab navigation -->
+    <div class="flex justify-center mb-6">
+      <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="flex">
+          <button class="tab-btn px-4 py-2 bg-blue-600 text-white" data-tab="general">General</button>
+          <button class="tab-btn px-4 py-2 bg-gray-200" data-tab="system">System</button>
+          <button class="tab-btn px-4 py-2 bg-gray-200" data-tab="potential">Potential</button>
+          <button class="tab-btn px-4 py-2 bg-gray-200" data-tab="nonlocal">Nonlocal</button>
+          <button class="tab-btn px-4 py-2 bg-gray-200" data-tab="result">Result</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab content -->
+    <div class="card rounded-lg shadow-lg p-6 mx-auto max-w-4xl">
+      <!-- General Parameters Tab -->
+      <div id="general-tab" class="tab-content active">
+        <h2 class="text-2xl font-semibold mb-4 text-center">General Parameters</h2>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <div class="input-group mb-3 flex items-center">
+              <label for="ctheta" class="font-medium">Rotation Angle (deg):</label>
+              <input type="number" id="ctheta" class="px-2 py-1 border rounded" value="7.0" step="0.1">
+            </div>
+            <div class="input-group mb-3 flex items-center">
+              <label for="alpha" class="font-medium">Alpha parameter:</label>
+              <input type="number" id="alpha" class="px-2 py-1 border rounded" value="0" step="0.1">
+            </div>
+            <div class="input-group mb-3 flex items-center">
+              <label for="nr" class="font-medium">No. of basis functions:</label>
+              <input type="number" id="nr" class="px-2 py-1 border rounded" value="60" min="1">
+            </div>
+            <div class="input-group mb-3 flex items-center">
+              <label for="rmax" class="font-medium">Rmax (fm):</label>
+              <input type="number" id="rmax" class="px-2 py-1 border rounded" value="40" min="1">
+            </div>
+            <div class="input-group mb-3 flex items-center">
+              <label for="numgauss" class="font-medium">No. of Gauss points:</label>
+              <input type="number" id="numgauss" class="px-2 py-1 border rounded" value="200" min="1">
+            </div>
+          </div>
+          <div>
+            <div class="input-group mb-3 flex items-center">
+              <label for="rmaxgauss" class="font-medium">Gauss Rmax (fm):</label>
+              <input type="number" id="rmaxgauss" class="px-2 py-1 border rounded" value="200" min="1">
+            </div>
+            <div class="input-group mb-3 flex items-center">
+              <label for="method" class="font-medium">Method:</label>
+              <select id="method" class="px-2 py-1 border rounded">
+                <option value="1">Linear Equation</option>
+                <option value="2">Green's Function</option>
+              </select>
+            </div>
+            <div class="input-group mb-3 flex items-center">
+              <label for="cwftype" class="font-medium">Coulomb function type:</label>
+              <select id="cwftype" class="px-2 py-1 border rounded">
+                <option value="1">COULCC</option>
+                <option value="2">cwfcomplex</option>
+              </select>
+            </div>
+            <div class="input-group mb-3 flex items-center">
+              <label for="thetah" class="font-medium">Angle step (deg):</label>
+              <input type="number" id="thetah" class="px-2 py-1 border rounded" value="1.0" step="0.1" min="0.1">
+            </div>
+            <div class="input-group mb-3 flex items-center">
+              <label for="thetamax" class="font-medium">Max angle (deg):</label>
+              <input type="number" id="thetamax" class="px-2 py-1 border rounded" value="180" min="1" max="180">
+            </div>
+            <div class="input-group mb-3 flex items-center">
+              <label for="matgauss" class="font-medium">Use Gauss for matrix:</label>
+              <input type="checkbox" id="matgauss" class="ml-2">
+            </div>
+            <div class="input-group mb-3 flex items-center">
+              <label for="bgauss" class="font-medium">Use Gauss for B vector:</label>
+              <input type="checkbox" id="bgauss" class="ml-2">
+            </div>
+            <div class="input-group mb-3 flex items-center">
+              <label for="backrot" class="font-medium">Back-rotation:</label>
+              <input type="checkbox" id="backrot" class="ml-2">
+            </div>
+            <div class="input-group mb-3 flex items-center">
+              <label for="readinpot" class="font-medium">Read external potential:</label>
+              <input type="checkbox" id="readinpot" class="ml-2">
+            </div>
+          </div>
+        </div>
+        <div class="mt-6 flex justify-end">
+          <button class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 next-btn" data-next="system">Next: System Parameters</button>
+        </div>
+      </div>
+
+      <!-- System Parameters Tab -->
+      <div id="system-tab" class="tab-content">
+        <h2 class="text-2xl font-semibold mb-4 text-center">System Parameters</h2>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <div class="input-group mb-3 flex items-center">
+              <label for="namep" class="font-medium">Projectile Name:</label>
+              <input type="text" id="namep" class="px-2 py-1 border rounded" value="n">
+            </div>
+            <div class="input-group mb-3 flex items-center">
+              <label for="massp" class="font-medium">Projectile Mass (amu):</label>
+              <input type="number" id="massp" class="px-2 py-1 border rounded" value="1" min="0" step="0.1">
+            </div>
+            <div class="input-group mb-3 flex items-center">
+              <label for="zp" class="font-medium">Projectile Charge:</label>
+              <input type="number" id="zp" class="px-2 py-1 border rounded" value="0" step="0.1">
+            </div>
+            <div class="input-group mb-3 flex items-center">
+              <label for="sp" class="font-medium">Projectile Spin:</label>
+              <input type="number" id="sp" class="px-2 py-1 border rounded" value="0.5" step="0.5">
+            </div>
+          </div>
+          <div>
+            <div class="input-group mb-3 flex items-center">
+              <label for="namet" class="font-medium">Target Name:</label>
+              <input type="text" id="namet" class="px-2 py-1 border rounded" value="40Ca">
+            </div>
+            <div class="input-group mb-3 flex items-center">
+              <label for="masst" class="font-medium">Target Mass (amu):</label>
+              <input type="number" id="masst" class="px-2 py-1 border rounded" value="40" min="0" step="0.1">
+            </div>
+            <div class="input-group mb-3 flex items-center">
+              <label for="zt" class="font-medium">Target Charge:</label>
+              <input type="number" id="zt" class="px-2 py-1 border rounded" value="20" step="0.1">
+            </div>
+            <div class="input-group mb-3 flex items-center">
+              <label for="elab" class="font-medium">Lab Energy (MeV):</label>
+              <input type="number" id="elab" class="px-2 py-1 border rounded" value="20" min="0" step="0.1">
+            </div>
+            <div class="input-group mb-3 flex items-center">
+              <label for="jmin" class="font-medium">Min. Angular Mom. (J):</label>
+              <input type="number" id="jmin" class="px-2 py-1 border rounded" value="0" min="0" step="0.5">
+            </div>
+            <div class="input-group mb-3 flex items-center">
+              <label for="jmax" class="font-medium">Max. Angular Mom. (J):</label>
+              <input type="number" id="jmax" class="px-2 py-1 border rounded" value="10" min="0" step="0.5">
+            </div>
+          </div>
+        </div>
+        <div class="mt-6 flex justify-between">
+          <button class="px-4 py-2 bg-gray-600 text-white rounded-lg shadow hover:bg-gray-700 prev-btn" data-prev="general">Previous: General</button>
+          <button class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 next-btn" data-next="potential">Next: Potential</button>
+        </div>
+      </div>
+
+      <!-- Potential Parameters Tab -->
+      <div id="potential-tab" class="tab-content">
+        <h2 class="text-2xl font-semibold mb-4 text-center">Optical Model Potential</h2>
+        
+        <div class="mb-6">
+          <h3 class="text-xl font-medium mb-2">Volume Terms</h3>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div>
+              <h4 class="text-lg font-medium mb-2">Real Volume</h4>
+              <div class="input-group mb-2 flex items-center">
+                <label for="vv" class="font-medium">Depth (MeV):</label>
+                <input type="number" id="vv" class="px-2 py-1 border rounded" value="46.553" step="0.1">
+              </div>
+              <div class="input-group mb-2 flex items-center">
+                <label for="rv" class="font-medium">Radius (fm):</label>
+                <input type="number" id="rv" class="px-2 py-1 border rounded" value="1.185" step="0.001">
+              </div>
+              <div class="input-group mb-2 flex items-center">
+                <label for="av" class="font-medium">Diffuseness (fm):</label>
+                <input type="number" id="av" class="px-2 py-1 border rounded" value="0.672" step="0.001">
+              </div>
+            </div>
+            <div>
+              <h4 class="text-lg font-medium mb-2">Imaginary Volume</h4>
+              <div class="input-group mb-2 flex items-center">
+                <label for="wv" class="font-medium">Depth (MeV):</label>
+                <input type="number" id="wv" class="px-2 py-1 border rounded" value="1.777" step="0.1">
+              </div>
+              <div class="input-group mb-2 flex items-center">
+                <label for="rw" class="font-medium">Radius (fm):</label>
+                <input type="number" id="rw" class="px-2 py-1 border rounded" value="1.185" step="0.001">
+              </div>
+              <div class="input-group mb-2 flex items-center">
+                <label for="aw" class="font-medium">Diffuseness (fm):</label>
+                <input type="number" id="aw" class="px-2 py-1 border rounded" value="0.672" step="0.001">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <h3 class="text-xl font-medium mb-2">Surface Terms</h3>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div>
+              <h4 class="text-lg font-medium mb-2">Real Surface</h4>
+              <div class="input-group mb-2 flex items-center">
+                <label for="vs" class="font-medium">Depth (MeV):</label>
+                <input type="number" id="vs" class="px-2 py-1 border rounded" value="0" step="0.1">
+              </div>
+              <div class="input-group mb-2 flex items-center">
+                <label for="rvs" class="font-medium">Radius (fm):</label>
+                <input type="number" id="rvs" class="px-2 py-1 border rounded" value="0" step="0.001">
+              </div>
+              <div class="input-group mb-2 flex items-center">
+                <label for="avs" class="font-medium">Diffuseness (fm):</label>
+                <input type="number" id="avs" class="px-2 py-1 border rounded" value="0" step="0.001">
+              </div>
+            </div>
+            <div>
+              <h4 class="text-lg font-medium mb-2">Imaginary Surface</h4>
+              <div class="input-group mb-2 flex items-center">
+                <label for="ws" class="font-medium">Depth (MeV):</label>
+                <input type="number" id="ws" class="px-2 py-1 border rounded" value="7.182" step="0.1">
+              </div>
+              <div class="input-group mb-2 flex items-center">
+                <label for="rws" class="font-medium">Radius (fm):</label>
+                <input type="number" id="rws" class="px-2 py-1 border rounded" value="1.288" step="0.001">
+              </div>
+              <div class="input-group mb-2 flex items-center">
+                <label for="aws" class="font-medium">Diffuseness (fm):</label>
+                <input type="number" id="aws" class="px-2 py-1 border rounded" value="0.538" step="0.001">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <h3 class="text-xl font-medium mb-2">Spin-Orbit Terms</h3>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div>
+              <h4 class="text-lg font-medium mb-2">Real Spin-Orbit</h4>
+              <div class="input-group mb-2 flex items-center">
+                <label for="vsov" class="font-medium">Depth (MeV):</label>
+                <input type="number" id="vsov" class="px-2 py-1 border rounded" value="5.343" step="0.1">
+              </div>
+              <div class="input-group mb-2 flex items-center">
+                <label for="rsov" class="font-medium">Radius (fm):</label>
+                <input type="number" id="rsov" class="px-2 py-1 border rounded" value="0.996" step="0.001">
+              </div>
+              <div class="input-group mb-2 flex items-center">
+                <label for="asov" class="font-medium">Diffuseness (fm):</label>
+                <input type="number" id="asov" class="px-2 py-1 border rounded" value="0.590" step="0.001">
+              </div>
+            </div>
+            <div>
+              <h4 class="text-lg font-medium mb-2">Imaginary Spin-Orbit</h4>
+              <div class="input-group mb-2 flex items-center">
+                <label for="vsow" class="font-medium">Depth (MeV):</label>
+                <input type="number" id="vsow" class="px-2 py-1 border rounded" value="-0.110" step="0.1">
+              </div>
+              <div class="input-group mb-2 flex items-center">
+                <label for="rsow" class="font-medium">Radius (fm):</label>
+                <input type="number" id="rsow" class="px-2 py-1 border rounded" value="0.996" step="0.001">
+              </div>
+              <div class="input-group mb-2 flex items-center">
+                <label for="asow" class="font-medium">Diffuseness (fm):</label>
+                <input type="number" id="asow" class="px-2 py-1 border rounded" value="0.590" step="0.001">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <h3 class="text-xl font-medium mb-2">Coulomb Term</h3>
+          <div class="input-group mb-2 flex items-center">
+            <label for="rc" class="font-medium">Radius (fm):</label>
+            <input type="number" id="rc" class="px-2 py-1 border rounded" value="1.698" step="0.001">
+          </div>
+        </div>
+
+        <div class="mt-6 flex justify-between">
+          <button class="px-4 py-2 bg-gray-600 text-white rounded-lg shadow hover:bg-gray-700 prev-btn" data-prev="system">Previous: System</button>
+          <button class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 next-btn" data-next="nonlocal">Next: Nonlocal</button>
+        </div>
+      </div>
+
+      <!-- Nonlocal Parameters Tab -->
+      <div id="nonlocal-tab" class="tab-content">
+        <h2 class="text-2xl font-semibold mb-4 text-center">Nonlocal Potential Parameters</h2>
+        <div class="mb-6">
+          <div class="input-group mb-3 flex items-center">
+            <label for="nonlocal" class="font-medium">Use nonlocal potential:</label>
+            <input type="checkbox" id="nonlocal" class="ml-2">
+          </div>
+          <div class="input-group mb-3 flex items-center">
+            <label for="nlbeta" class="font-medium">Nonlocal range (fm):</label>
+            <input type="number" id="nlbeta" class="px-2 py-1 border rounded" value="0.0" step="0.01" min="0">
+          </div>
+          <p class="text-sm text-gray-600 mt-4">
+            The nonlocal form follows Perey and Buck (Nuclear Physics, 32, 353-380).
+            If enabled, beta value will be used as the nonlocal range parameter.
+          </p>
+        </div>
+        <div class="mt-6 flex justify-between">
+          <button class="px-4 py-2 bg-gray-600 text-white rounded-lg shadow hover:bg-gray-700 prev-btn" data-prev="potential">Previous: Potential</button>
+          <button class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 next-btn" data-next="result">Generate Input File</button>
+        </div>
+      </div>
+
+      <!-- Result Tab -->
+      <div id="result-tab" class="tab-content">
+        <h2 class="text-2xl font-semibold mb-4 text-center">Generated Input File</h2>
+        <div class="mb-4">
+          <pre id="input-file" class="bg-gray-100 p-4 rounded-lg overflow-auto text-sm" style="max-height: 400px;"></pre>
+        </div>
+        <div class="mt-6 flex justify-between">
+          <button class="px-4 py-2 bg-gray-600 text-white rounded-lg shadow hover:bg-gray-700 prev-btn" data-prev="nonlocal">Previous: Nonlocal</button>
+          <button class="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700" id="download-btn">Download Input File</button>
+        </div>
+      </div>
+    </div>
+
+    <footer class="mt-12 text-center text-gray-400 text-sm">
+      <p>COLOSS: Complex-scaled Optical and couLOmb Scattering Solver</p>
+      <p class="mt-1">Input file generator</p>
+    </footer>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Tab switching functionality
+      const tabBtns = document.querySelectorAll('.tab-btn');
+      const tabContents = document.querySelectorAll('.tab-content');
+      
+      tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          // Reset all tabs
+          tabBtns.forEach(b => b.classList.remove('bg-blue-600', 'text-white'));
+          tabBtns.forEach(b => b.classList.add('bg-gray-200'));
+          tabContents.forEach(content => content.classList.remove('active'));
+          
+          // Activate selected tab
+          btn.classList.remove('bg-gray-200');
+          btn.classList.add('bg-blue-600', 'text-white');
+          const tabId = btn.getAttribute('data-tab');
+          document.getElementById(`${tabId}-tab`).classList.add('active');
+        });
+      });
+
+      // Next button functionality
+      document.querySelectorAll('.next-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const nextTab = btn.getAttribute('data-next');
+          // Find the tab button for this tab
+          const tabBtn = document.querySelector(`.tab-btn[data-tab="${nextTab}"]`);
+          tabBtn.click();
+          
+          // If clicking to result tab, generate the input file
+          if (nextTab === 'result') {
+            generateInputFile();
+          }
+        });
+      });
+
+      // Previous button functionality
+      document.querySelectorAll('.prev-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const prevTab = btn.getAttribute('data-prev');
+          // Find the tab button for this tab
+          const tabBtn = document.querySelector(`.tab-btn[data-tab="${prevTab}"]`);
+          tabBtn.click();
+        });
+      });
+
+      // Function to generate the input file
+      function generateInputFile() {
+        let generalBlock = `&general\n`;
+        generalBlock += `        nr=${document.getElementById('nr').value}  alpha=${document.getElementById('alpha').value} Rmax=${document.getElementById('rmax').value} ctheta=${document.getElementById('ctheta').value}\n`;
+        generalBlock += `        matgauss=${document.getElementById('matgauss').checked ? "t" : "f"} bgauss=${document.getElementById('bgauss').checked ? "t" : "f"} method=${document.getElementById('method').value}\n`;
+        generalBlock += `        numgauss=${document.getElementById('numgauss').value} rmaxgauss=${document.getElementById('rmaxgauss').value} cwftype=${document.getElementById('cwftype').value}\n`;
+        generalBlock += `        thetah=${document.getElementById('thetah').value} thetamax=${document.getElementById('thetamax').value}\n`;
+        generalBlock += `        backrot=${document.getElementById('backrot').checked ? "t" : "f"} readinpot=${document.getElementById('readinpot').checked ? "t" : "f"} /\n\n`;
+        
+        let systemBlock = `&system\n`;
+        systemBlock += `        zp=${document.getElementById('zp').value}    massp=${document.getElementById('massp').value}   namep='${document.getElementById('namep').value}'\n`;
+        systemBlock += `        zt=${document.getElementById('zt').value}   masst=${document.getElementById('masst').value}  namet='${document.getElementById('namet').value}'\n`;
+        systemBlock += `        jmin=${document.getElementById('jmin').value} jmax=${document.getElementById('jmax').value}  elab=${document.getElementById('elab').value} sp=${document.getElementById('sp').value}/\n\n`;
+        
+        let potBlock = `&pot\n`;
+        potBlock += `        vv=${document.getElementById('vv').value}   rv=${document.getElementById('rv').value}    av=${document.getElementById('av').value}\n`;
+        potBlock += `        wv=${document.getElementById('wv').value}    rw=${document.getElementById('rw').value}    aw=${document.getElementById('aw').value}\n`;
+        potBlock += `        vs=${document.getElementById('vs').value}        rvs=${document.getElementById('rvs').value}       avs=${document.getElementById('avs').value}\n`;
+        potBlock += `        ws=${document.getElementById('ws').value}    rws=${document.getElementById('rws').value}   aws=${document.getElementById('aws').value}\n`;
+        potBlock += `        vsov=${document.getElementById('vsov').value}  rsov=${document.getElementById('rsov').value}  asov=${document.getElementById('asov').value}\n`;
+        potBlock += `        vsow=${document.getElementById('vsow').value} rsow=${document.getElementById('rsow').value}  asow=${document.getElementById('asow').value}\n`;
+        potBlock += `        rc=${document.getElementById('rc').value} /\n\n`;
+        
+        let nonlocalBlock = `&nonlocalpot\n`;
+        nonlocalBlock += `        nonlocal=${document.getElementById('nonlocal').checked ? "t" : "f"} nlbeta=${document.getElementById('nlbeta').value} /\n`;
+        
+        const inputFile = generalBlock + systemBlock + potBlock + nonlocalBlock;
+        document.getElementById('input-file').textContent = inputFile;
+      }
+
+      // Download functionality
+      document.getElementById('download-btn').addEventListener('click', () => {
+        const inputFileContent = document.getElementById('input-file').textContent;
+        const blob = new Blob([inputFileContent], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `coloss_input_${document.getElementById('namep').value}_${document.getElementById('namet').value}_${document.getElementById('elab').value}MeV.inp`;
+        document.body.appendChild(a);
+        a.click();
+        
+        // Cleanup
+        setTimeout(() => {
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+        }, 0);
+      });
+    });
+  </script>
+</body>
+</html>
