@@ -6,3 +6,10 @@ fort.*
 *.so
 COLOSS
 build/
+*.bak
+__pycache__/
+*.pyc
+test/temp*.in
+*.swp
+*.swo
+*~
