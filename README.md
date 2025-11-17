@@ -391,13 +391,47 @@ Using Linear Equation Method to Solve
 
 ### Citation
 
-If you use COLOSS in your research, please cite the appropriate references (to be added).
+If you use COLOSS in your research, please cite our published paper:
+
+**Paper**: Liu, J., Lei, J., & Ren, Z. (2025). COLOSS: Complex-scaled Optical and couLOmb Scattering Solver. *Computer Physics Communications*, 311, 109568.
+**DOI**: [10.1016/j.cpc.2025.109568](https://doi.org/10.1016/j.cpc.2025.109568)
+**URL**: [https://www.sciencedirect.com/science/article/abs/pii/S0010465525000712?via%3Dihub](https://www.sciencedirect.com/science/article/abs/pii/S0010465525000712?via%3Dihub)
+
+#### BibTeX Entry
+
+```bibtex
+@article{LIU2025109568,
+    title = {COLOSS: Complex-scaled Optical and couLOmb Scattering Solver},
+    journal = {Computer Physics Communications},
+    volume = {311},
+    pages = {109568},
+    year = {2025},
+    issn = {0010-4655},
+    doi = {https://doi.org/10.1016/j.cpc.2025.109568},
+    url = {https://www.sciencedirect.com/science/article/pii/S0010465525000712},
+    author = {Junzhe Liu and Jin Lei and Zhongzhou Ren},
+    keywords = {Complex scaling, Scattering theory, Nuclear reaction, Optical potential},
+    abstract = {We introduce COLOSS, a program designed to address the scattering problem
+    using a bound-state technique known as complex scaling. In this method, the oscillatory
+    boundary conditions of the wave function are transformed into exponentially decaying ones,
+    accommodating the long-range Coulomb interaction. The program implements the general local
+    optical potential and the Perey-Buck non-local optical potential, with all potential
+    parameters included in a well-designed input format for ease of use. The design offers
+    users direct access to compute S-matrices and cross-sections for scattering processes
+    involving a projectile of any spin interacting with a spin-0 target. We provide thorough
+    discussions on the precision of Lagrange functions and their benefits in evaluating matrix
+    elements. Additionally, COLOSS incorporates two distinct rotation methods, making it
+    adaptable to potentials without analytical expressions. Comparative results demonstrate
+    that COLOSS achieves high accuracy when compared with the direct integration method,
+    Numerov, underscoring its utility and effectiveness in scattering calculations.}
+}
+```
 
 ---
 
 ## License
 
-(License information to be added)
+GPLv3 - See the LICENSE file for details
 
 ## Contact
 
