@@ -1,0 +1,22 @@
+&general
+        nr=20  alpha=1.0 Rmax=16.0 ctheta=0.0
+        matgauss=t bgauss=f numgauss=100 rmaxgauss=50.0
+        backrot=t method=1
+        thetah=1.0 thetamax=180 /
+
+&system
+        zp=1   massp=1  namep='p'
+        zt=0   masst=1  namet='n'
+        jmin=1 jmax=1 sp=0.5 elab=-2.224 /
+
+&pot
+        vv=0 rv=0 av=1.0
+        wv=0 rw=0 aw=1.0
+        vs=0 rvs=0 avs=0
+        ws=0 rws=0 aws=0
+        vsov=0 rsov=0 asov=0
+        vsow=0 rsow=0 asow=0
+        rc=0.0 /
+
+&nonlocalpot
+        nonlocal=f nlbeta=0.0 /

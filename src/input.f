@@ -19,6 +19,7 @@
                 namelist /system/ zp,massp,namep,zt,masst,namet,elab,jmax,jmin,sp
 
                 namelist /pot/
+     &                                  a1,a2,
      &                                  vv,rv,av,wv,rw,aw,
      &                                  vs,rvs,avs,ws,rws,aws,
      &                                  vsov,rsov,asov,vsow,rsow,asow,
@@ -94,6 +95,7 @@ c-----------------end of system namelist--------------------------------
 
 
 c------------------potential namelist----------------------------------
+                a1=0d0; a2=0d0
                 vv=0d0; rv=0d0; av=0d0
                 wv=0d0; rw=0d0; aw=0d0
                 vs=0d0; rvs=0d0; avs=0d0

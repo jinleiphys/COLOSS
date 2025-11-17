@@ -47,8 +47,15 @@
                         return
                 end if
 
-                para%a1 = massp
-                para%a2 = masst
+                ! Set a1 and a2: if not defined in input (=0), use defaults
+                if (abs(a1) < 1d-10 .and. abs(a2) < 1d-10) then
+                    para%a1 = 0d0
+                    para%a2 = masst
+                else
+                    para%a1 = a1
+                    para%a2 = a2
+                end if
+
                 para%z1 = zp
                 para%z2 = zt
                 para%vv=0d0; para%rvv=0d0; para%avv=0d0
@@ -316,7 +323,7 @@ c           by doing the numerical integral with Gauss quadtrature method.
                 integer :: l
                 real*8 :: totJ,S,twoLdotS
 
-                a13 = masst**(1d0/3d0)
+                a13 = para%a2**(1d0/3d0) + para%a1**(1d0/3d0)
                 l = channel_index%L(ich)
                 S = channel_index%S(ich)
                 totJ = channel_index%J(ich)
@@ -583,7 +590,7 @@ c *** WS derivative
             real*8 :: pionmass
             complex*16 :: real_volume, img_volume, real_surf, img_surf, real_SO, img_SO
             real*8 :: a13
-            a13 = para%a2**(1d0/3d0)
+            a13 = para%a2**(1d0/3d0) + para%a1**(1d0/3d0)
             pionmass = 2d0
 
             real_volume = -w_s(r,para%vv,para%rvv*a13,para%avv)
@@ -608,7 +615,7 @@ c *** WS derivative
             real*8 :: pionmass
             complex*16 :: real_SO, img_SO
             real*8 :: a13
-            a13 = para%a2**(1d0/3d0)
+            a13 = para%a2**(1d0/3d0) + para%a1**(1d0/3d0)
             pionmass = 2d0
 
             real_SO = pionmass/r*dws(r,para%vsov,para%rsov*a13,para%asov)*twoLdotS
@@ -626,7 +633,7 @@ c *** WS derivative
             complex*16 :: r,WS_Exclude_SO
             complex*16 :: real_volume, img_volume, real_surf, img_surf
             real*8 :: a13
-            a13 = para%a2**(1d0/3d0)
+            a13 = para%a2**(1d0/3d0) + para%a1**(1d0/3d0)
 
             real_volume = -w_s(r,para%vv,para%rvv*a13,para%avv)
             img_volume = -w_s(r,para%wv,para%rw*a13,para%aw)

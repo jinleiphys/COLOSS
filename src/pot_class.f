@@ -21,6 +21,7 @@
             type(pot_para) :: input_pot
 
             !variables of OMP in the input namelists
+            real*8 :: a1,a2!mass numbers for potential radius calculation
             real*8 :: vv,rv,av
             real*8 :: wv,rw,aw
             real*8 :: vs,rvs,avs

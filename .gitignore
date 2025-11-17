@@ -1,7 +1,8 @@
 dump
-*.o 
+*.o
 *.mod
 fort.*
 *.a
 *.so
 COLOSS
+build/

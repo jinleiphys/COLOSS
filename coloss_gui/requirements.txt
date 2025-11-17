@@ -1,0 +1,12 @@
+# COLOSS GUI Requirements
+# Python 3.8+ required
+
+# GUI Framework
+PySide6>=6.5.0
+
+# Plotting and numerical computing
+matplotlib>=3.7.0
+numpy>=1.24.0
+
+# Optional: for better performance
+scipy>=1.10.0
