@@ -349,6 +349,9 @@ if [ "$GUI_CHOICE" = "2" ]; then
     print_info "Setting up COLOSS GUI with conda environment..."
     echo ""
 
+    # Flag to track if we installed Miniconda
+    INSTALLED_MINICONDA=false
+
     # Check and install conda if needed
     print_info "Checking for conda installation..."
     if ! command -v conda &> /dev/null; then
@@ -361,6 +364,7 @@ if [ "$GUI_CHOICE" = "2" ]; then
             exit 1
         fi
 
+        INSTALLED_MINICONDA=true
         print_info "Installing Miniconda..."
 
         # Detect OS and architecture
@@ -544,9 +548,13 @@ EOF
     echo -e "  ${CYAN}conda activate coloss_gui${NC}"
     echo -e "  ${CYAN}cd coloss_gui && python main.py${NC}"
     echo ""
-    print_warning "Note: You may need to restart your terminal or run:"
-    echo -e "  ${CYAN}source ~/.bashrc${NC}  (or ~/.zshrc)"
-    echo ""
+
+    # Only show this warning if we just installed Miniconda
+    if [ "$INSTALLED_MINICONDA" = true ]; then
+        print_warning "Note: Since Miniconda was just installed, you may need to restart your terminal or run:"
+        echo -e "  ${CYAN}source ~/.bashrc${NC}  (or ~/.zshrc)"
+        echo ""
+    fi
 fi
 
 echo ""
