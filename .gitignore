@@ -13,3 +13,4 @@ test/temp*.in
 *.swp
 *.swo
 *~
+run_coloss_gui.sh
