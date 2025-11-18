@@ -430,15 +430,12 @@ if [ "$GUI_CHOICE" = "2" ]; then
     print_info "Setting up conda environment: $ENV_NAME"
 
     if conda env list | grep -q "^$ENV_NAME "; then
-        print_warning "Environment $ENV_NAME already exists"
-        print_info "Removing and recreating environment for clean installation..."
-        conda env remove -n $ENV_NAME -y
+        print_success "Environment $ENV_NAME already exists, using it"
+    else
+        print_info "Creating new conda environment with Python 3.10..."
+        conda create -n $ENV_NAME python=3.10 -y
+        print_success "Conda environment created"
     fi
-
-    print_info "Creating new conda environment with Python 3.10..."
-    conda create -n $ENV_NAME python=3.10 -y
-
-    print_success "Conda environment created"
     echo ""
 
     # Activate environment and install Python packages
