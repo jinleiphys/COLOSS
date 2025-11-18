@@ -175,6 +175,56 @@ fi
 
 echo ""
 
+# Step 1.5: Check compiler architecture compatibility (for macOS with C++ library)
+print_step "Checking compiler architecture compatibility..."
+echo ""
+
+# Only check if we're on macOS and using gfortran (since we link with C++ library)
+if [[ "$OSTYPE" == "darwin"* ]] && [ "$SELECTED_COMPILER" = "gfortran" ]; then
+    # Check gfortran architecture
+    GFORTRAN_ARCH=$(gfortran -dumpmachine | cut -d'-' -f1)
+    print_info "gfortran architecture: $GFORTRAN_ARCH"
+
+    # Check g++ architecture (used for C++ library)
+    if command -v g++ &> /dev/null; then
+        GCC_ARCH=$(g++ -dumpmachine | cut -d'-' -f1)
+        print_info "g++ architecture: $GCC_ARCH"
+
+        # Warn if architectures don't match
+        if [ "$GFORTRAN_ARCH" != "$GCC_ARCH" ]; then
+            print_warning "Architecture mismatch detected!"
+            echo ""
+            echo "  gfortran: $GFORTRAN_ARCH"
+            echo "  g++:      $GCC_ARCH"
+            echo ""
+            print_warning "This may cause linking errors with the C++ library (libcwf_cpp.a)"
+            print_warning "Both compilers should be the same architecture (x86_64 or arm64)"
+            echo ""
+            read -p "Do you want to continue anyway? (y/N): " -n 1 -r
+            echo ""
+            if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+                print_error "Compilation cancelled."
+                echo ""
+                print_info "To fix this issue:"
+                echo "  1. Install matching compiler versions from Homebrew:"
+                echo "     brew install gcc"
+                echo "  2. Or use conda to install consistent compilers:"
+                echo "     conda install -c conda-forge gfortran_osx-64  (for x86_64)"
+                echo "     conda install -c conda-forge gfortran_osx-arm64 (for arm64)"
+                exit 1
+            fi
+            print_warning "Continuing with architecture mismatch - compilation may fail"
+        else
+            print_success "Architecture check passed: both compilers are $GFORTRAN_ARCH"
+        fi
+    else
+        print_warning "g++ not found - skipping architecture compatibility check"
+        print_info "The C++ library may need to be recompiled if linking fails"
+    fi
+fi
+
+echo ""
+
 # Step 2: Check and configure LAPACK libraries
 print_step "Checking for LAPACK libraries..."
 LAPACK_FOUND=false
