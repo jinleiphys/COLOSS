@@ -8,6 +8,7 @@
         use input
         use bound
         use scatt
+        use scatt_method3
         use coulfunc
         use npcc
         use yamaguchi
@@ -45,7 +46,7 @@
 300     FORMAT(a10,2x,a10,"  angular momentum channel") 
 
         select case(method)
-        
+
         case(1)
                 call cpu_time(t1)
                 write(*,*) "Using Linear Equation Method to Solve"
@@ -56,7 +57,7 @@
                 end do
                 call cpu_time(t2)
         case(2)
-                if(nonlocal) then 
+                if(nonlocal) then
                         write(*,*) "For nonlocal potential, Please use linear equation method"
                         stop
                 endif
@@ -67,6 +68,19 @@
                 do ich = 1, channel_index%ch_numbers
                         call solve_bound(ich,input_pot)! generate the matrix value and solve the eigenvalue problem
                         call solve_scatt_green(ich)! caclulate the scatt amplitude
+                end do
+                call cpu_time(t2)
+        case(3)
+                if(nonlocal) then
+                        write(*,*) "Method 3 does not support nonlocal potential yet"
+                        stop
+                endif
+                call cpu_time(t1)
+                write(*,*) "Using Method 3: Exact Boundary Condition Method to Solve"
+                write(*,200) "L", "S", "J", "Real(Smat)", "Imag(Smat)", "Partial Wave Reac_Xsec (mb)"
+                write(*,201)
+                do ich = 1, channel_index%ch_numbers
+                        call solve_scatt_method3(ich,input_pot)
                 end do
                 call cpu_time(t2)
         end select

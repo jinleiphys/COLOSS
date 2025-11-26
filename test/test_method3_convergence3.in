@@ -1,0 +1,23 @@
+&general
+    nr=100  alpha=0 Rmax=80 ctheta=7
+    matgauss=f bgauss=f method=3
+    thetah=1.0 thetamax=180
+    cwftype=1 backrot=f /
+
+&system
+    zp=0    massp=1   namep='n'
+    zt=0    masst=40  namet='Target'
+    jmin=0 jmax=10  elab=20 sp=0.5 /
+
+&pot
+    a1=0.00  a2=0.00
+    vv=46.553   rv=1.185    av=0.672
+    wv=1.777    rw=1.185    aw=0.672
+    vs=0        rvs=0       avs=0
+    ws=7.182    rws=1.288   aws=0.538
+    vsov=5.343  rsov=0.996  asov=0.590
+    vsow=-0.110 rsow=0.996  asow=0.590
+    rc=0.0 /
+
+&nonlocalpot
+    nonlocal=f nlbeta=0.0 /

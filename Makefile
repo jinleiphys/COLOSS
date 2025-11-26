@@ -27,7 +27,7 @@ $(BUILDDIR)/clebsch.o $(BUILDDIR)/spharm.o $(BUILDDIR)/gauss_mesh.o $(BUILDDIR)/
 $(BUILDDIR)/gauss.o $(BUILDDIR)/coulcc.o $(BUILDDIR)/coul90.o $(BUILDDIR)/interpolation.o\
 $(BUILDDIR)/generate_laguerre.o $(BUILDDIR)/rot_potential.o \
 $(BUILDDIR)/solve_eigen.o $(BUILDDIR)/input.o \
-$(BUILDDIR)/matrix_element.o $(BUILDDIR)/bound.o $(BUILDDIR)/npcc.o $(BUILDDIR)/yamaguchi.o $(BUILDDIR)/scatt.o
+$(BUILDDIR)/matrix_element.o $(BUILDDIR)/bound.o $(BUILDDIR)/npcc.o $(BUILDDIR)/yamaguchi.o $(BUILDDIR)/scatt.o $(BUILDDIR)/scatt_method3.o
 
 # define the static library
 STLIB = $(BUILDDIR)/liballmodules.a
