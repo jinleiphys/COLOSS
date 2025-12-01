@@ -294,6 +294,7 @@ c-----------------------------------------------------------------------
             eta_real = real(eta)
             call compute_gamma_s5(k, R_outer, l, gamma_s, eta_real)
 
+
             allocate(M_matrix(N_leg, N_leg))
             allocate(b_vec(N_leg), c_vec(N_leg))
 
@@ -442,12 +443,14 @@ c-----------------------------------------------------------------------
                 write(*,*) "Warning: H^+ very small at boundary"
                 f_l = cmplx(0.d0, 0.d0, kind=8)
             else
-                f_l = phi_R / hhat_R
+                ! f_l = phi(R) / (k * H^+(kR))
+                f_l = phi_R / (k * hhat_R)
             endif
 
             scatt_amp_nuc_channel(ich) = f_l
 
-            smat = 1.d0 + 2.d0 * iu * f_l
+            ! S = e^(2i*sigma_l) * (1 + 2ik*f_l)
+            smat = exp(2.d0*iu*cph(l)) * (1.d0 + 2.d0 * iu * k * f_l)
 
             reac_xsec = pi/k/k/(2.d0*S+1.d0)*(2.d0*J+1.d0)
      &                 *(1.d0 - abs(smat)**2) * 10.d0
