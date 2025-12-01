@@ -249,7 +249,7 @@ c-----------------------------------------------------------------------
             complex*16, dimension(:,:), allocatable :: M_matrix
             complex*16, dimension(:), allocatable :: b_vec, c_vec
 
-            complex*16 :: vmod
+            complex*16 :: vmod, vmod_short
             complex*16 :: f_l, smat
             real*8 :: reac_xsec
 
@@ -266,6 +266,11 @@ c-----------------------------------------------------------------------
 
             complex*16 :: phi_R, phi_R_deriv, hhat_R
             real*8 :: coeff_kin
+
+            ! For scattering amplitude extraction
+            complex*16 :: f_l_direct, f_l_integral
+            complex*16 :: f_born, f_sc_int
+            complex*16 :: psi_sc_ir
 
             ! For boundary condition
             real*8 :: f_j_at_R, f_j_deriv_at_R
@@ -327,15 +332,16 @@ c-----------------------------------------------------------------------
      &                      fc_loc, gc_loc, fcp_loc, gcp_loc,
      &                      kfn_mesh, ifail_mesh)
 
+                ! Get V_short = V_nuc + V_coul_finite - V_coul_point
+                call compute_potential_at_r5(leg5_r(ir), para, ich, vmod_short)
+
                 ! For matrix: use full potential V_nuc + V_coul_finite
-                ! (same as Method 1)
-                call compute_potential_at_r5(leg5_r(ir), para, ich, vmod)
-                ! vmod is V_short = V_nuc + V_coul_finite - V_coul_point
-                ! Add back V_coul_point to get V_full = V_nuc + V_coul_finite
+                ! vmod = V_short + V_coul_point = V_nuc + V_coul_finite
+                vmod = vmod_short
                 if (abs(z12) > 1.d-10) then
                     vmod = vmod + e2 * z12 / leg5_r(ir)
                 endif
-                vmod = vmod / coeff_kin  ! U = 2*mu*V/hbar^2
+                vmod = vmod / coeff_kin  ! U_full = 2*mu*V_full/hbar^2
 
                 do jr = 1, N_leg
                     ! Baye's T matrix (note: T represents -d^2/dr^2)
@@ -350,10 +356,12 @@ c-----------------------------------------------------------------------
                     endif
                 end do
 
-                ! Source term: use full potential V_nuc + V_coul_finite
-                ! (same potential as in matrix)
-                ! b = U_full * F_l * sqrt(lambda)
-                b_vec(ir) = vmod * fc_loc(l) * sqrt(leg5_w(ir))
+                ! Source term: use SHORT-RANGE potential Ṽ_N = V_N + V_C^S
+                ! From Eq. (13): [E - H] ψ^sc = e^{iσ_l} Ṽ_N F_l
+                ! Try WITHOUT exp(i*sigma_l) first to match no-Coulomb structure
+                ! b = U_short * F_l * sqrt(lambda)
+                vmod_short = vmod_short / coeff_kin  ! U_short = 2*mu*V_short/hbar^2
+                b_vec(ir) = vmod_short * fc_loc(l) * sqrt(leg5_w(ir))
             end do
 
             ! ============================================================
@@ -464,25 +472,21 @@ c-----------------------------------------------------------------------
             ! H^+ = G + iF
             hhat_R = gc_loc(l) + iu * fc_loc(l)
 
-            ! Debug output
-            if (ich == 1) then
-                write(*,*) "phi_R =", phi_R
-                write(*,*) "|phi_R| =", abs(phi_R)
-                write(*,*) "F_l(kR) =", fc_loc(l), "G_l(kR) =", gc_loc(l)
-                write(*,*) "|H^+| =", abs(hhat_R)
-                write(*,*) "========================="
-            endif
+            ! ============================================================
+            ! METHOD A: Direct matching at boundary
+            ! psi_sc -> k * f_l * O_l^{(+)} (without source phase factor)
+            ! f_l^{direct} = phi(R) / (k * H^+(kR))
+            ! ============================================================
+            f_l_direct = phi_R / (k * hhat_R)
 
             ! ============================================================
-            ! Calculate f_born and f_sc using integral formula (like Method 1)
-            !
+            ! METHOD B: Integral formula
             ! f_born = -1/ecm * integral[V_short * F_l^2] dr
-            ! f_sc   = -1/ecm * sum(c_vec * b_vec) * coeff_kin / exp(2i*sigma)
+            ! f_sc   = -1/ecm * integral[V_short * F_l * psi_sc] dr
             ! ============================================================
 
-            ! f_born: integral of V_short * F_l^2 (same as Method 1)
-            ! V_short = V_nuc + V_coul_finite - V_coul_point
-            phi_R_deriv = cmplx(0.d0, 0.d0, kind=8)  ! use as f_born
+            ! f_born: integral of V_short * F_l^2
+            f_born = cmplx(0.d0, 0.d0, kind=8)
             do ir = 1, N_leg - 1
                 x_mesh = k * leg5_r(ir)
                 call COUL90(x_mesh, eta_real, 0.d0, l,
@@ -492,14 +496,19 @@ c-----------------------------------------------------------------------
                 call compute_potential_at_r5(leg5_r(ir), para, ich, vmod)
 
                 ! f_born: V_short * F_l^2 * dr
-                phi_R_deriv = phi_R_deriv + leg5_w(ir) * R_outer *
+                f_born = f_born + leg5_w(ir) * R_outer *
      &                        vmod * fc_loc(l) * fc_loc(l)
             end do
-            phi_R_deriv = -phi_R_deriv / ecm  ! f_born
+            f_born = -f_born / ecm
 
-            ! f_sc: use integral formula with V_short
-            ! f_sc = -1/ecm * integral[V_short * F_l * psi_sc] dr
-            f_l = cmplx(0.d0, 0.d0, kind=8)
+            ! f_sc: integral of V_short * F_l * psi_sc
+            ! From Eq. (15): f = -2mu/hbar^2/k^2 * exp(-i*sigma_l) * int[F_l*V*psi]
+            ! Since source term has exp(i*sigma_l), psi_sc = exp(i*sigma_l) * psi_sc_tilde
+            ! So: f_sc = -1/ecm * exp(-i*sigma_l) * int[V*F_l*psi_sc]
+            !         = -1/ecm * exp(-i*sigma_l) * int[V*F_l*exp(i*sigma_l)*psi_sc_tilde]
+            !         = -1/ecm * int[V*F_l*psi_sc_tilde]
+            ! No additional phase factor needed!
+            f_sc_int = cmplx(0.d0, 0.d0, kind=8)
             do ir = 1, N_leg - 1
                 x_mesh = k * leg5_r(ir)
                 call COUL90(x_mesh, eta_real, 0.d0, l,
@@ -508,27 +517,35 @@ c-----------------------------------------------------------------------
                 ! Get V_short
                 call compute_potential_at_r5(leg5_r(ir), para, ich, vmod)
 
-                ! psi_sc at mesh point
-                phi_R = c_vec(ir) / sqrt(leg5_w(ir))
+                ! psi_sc at mesh point: phi(r_i) = c_i / sqrt(lambda_i)
+                psi_sc_ir = c_vec(ir) / sqrt(leg5_w(ir))
 
                 ! integral: V_short * F_l * psi_sc * dr
-                f_l = f_l + leg5_w(ir) * R_outer * vmod * fc_loc(l) * phi_R
+                f_sc_int = f_sc_int + leg5_w(ir) * R_outer *
+     &                     vmod * fc_loc(l) * psi_sc_ir
             end do
-            f_l = -f_l / ecm
+            f_sc_int = -f_sc_int / ecm
 
-            ! Debug
+            f_l_integral = f_born + f_sc_int
+
+            ! Output comparison for L=0 channel
             if (ich == 1) then
-                write(*,*) "M5: f_born=", phi_R_deriv, "|f_born|=",
-     &                     abs(phi_R_deriv)
-                write(*,*) "M5: f_sc=", f_l, "|f_sc|=", abs(f_l)
+                write(*,*) "======== Rmax =", R_outer, " L =", l,
+     &                     " ========"
+                write(*,*) "Direct match: f_l =", f_l_direct
+                write(*,*) "Integral:     f_l =", f_l_integral
+                write(*,*) "  f_born =", f_born
+                write(*,*) "  f_sc   =", f_sc_int
+                write(*,*) "Difference: ", abs(f_l_direct - f_l_integral)
             endif
 
-            f_l = phi_R_deriv + f_l  ! total f_l
+            ! Use integral method result
+            f_l = f_l_integral
 
             scatt_amp_nuc_channel(ich) = f_l
 
-            ! S = e^(2i*sigma_l) * (1 + 2ik*f_l)
-            smat = exp(2.d0*iu*cph(l)) * (1.d0 + 2.d0 * iu * k * f_l)
+            ! S = 1 + 2ik*f_l (same formula as Method 1)
+            smat = 1.d0 + 2.d0 * iu * k * f_l
 
             reac_xsec = pi/k/k/(2.d0*S+1.d0)*(2.d0*J+1.d0)
      &                 *(1.d0 - abs(smat)**2) * 10.d0
