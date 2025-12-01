@@ -9,6 +9,8 @@
         use bound
         use scatt
         use scatt_method3
+        use scatt_method4
+        use scatt_method5
         use coulfunc
         use npcc
         use yamaguchi
@@ -76,11 +78,37 @@
                         stop
                 endif
                 call cpu_time(t1)
-                write(*,*) "Using Method 3: Exact Boundary Condition Method to Solve"
+                write(*,*) "Using Method 3: Barycentric D1 + D1*D1"
                 write(*,200) "L", "S", "J", "Real(Smat)", "Imag(Smat)", "Partial Wave Reac_Xsec (mb)"
                 write(*,201)
                 do ich = 1, channel_index%ch_numbers
                         call solve_scatt_method3(ich,input_pot)
+                end do
+                call cpu_time(t2)
+        case(4)
+                if(nonlocal) then
+                        write(*,*) "Method 4 does not support nonlocal potential yet"
+                        stop
+                endif
+                call cpu_time(t1)
+                write(*,*) "Using Method 4: Effective D2 for x-regularized basis"
+                write(*,200) "L", "S", "J", "Real(Smat)", "Imag(Smat)", "Partial Wave Reac_Xsec (mb)"
+                write(*,201)
+                do ich = 1, channel_index%ch_numbers
+                        call solve_scatt_method4(ich,input_pot)
+                end do
+                call cpu_time(t2)
+        case(5)
+                if(nonlocal) then
+                        write(*,*) "Method 5 does not support nonlocal potential yet"
+                        stop
+                endif
+                call cpu_time(t1)
+                write(*,*) "Using Method 5: Baye D,T on coefficients c_j"
+                write(*,200) "L", "S", "J", "Real(Smat)", "Imag(Smat)", "Partial Wave Reac_Xsec (mb)"
+                write(*,201)
+                do ich = 1, channel_index%ch_numbers
+                        call solve_scatt_method5(ich,input_pot)
                 end do
                 call cpu_time(t2)
         end select
