@@ -199,6 +199,9 @@ c-----------------------------------------------------------------------
                 write(*,*) 'compute_gamma_s5: COUL90 ifail=', ifail
             endif
 
+            ! u^{C(+)} = (G + iF) * e^{-i*sigma_l}
+            ! But for logarithmic derivative, the phase cancels:
+            ! gamma = u'/u = (G'+iF')/(G+iF) (phase factor cancels)
             hhat = gc_loc(l) + iu * fc_loc(l)
             hhatp = k_wave * (gcp_loc(l) + iu * fcp_loc(l))
 
@@ -324,7 +327,14 @@ c-----------------------------------------------------------------------
      &                      fc_loc, gc_loc, fcp_loc, gcp_loc,
      &                      kfn_mesh, ifail_mesh)
 
+                ! For matrix: use full potential V_nuc + V_coul_finite
+                ! (same as Method 1)
                 call compute_potential_at_r5(leg5_r(ir), para, ich, vmod)
+                ! vmod is V_short = V_nuc + V_coul_finite - V_coul_point
+                ! Add back V_coul_point to get V_full = V_nuc + V_coul_finite
+                if (abs(z12) > 1.d-10) then
+                    vmod = vmod + e2 * z12 / leg5_r(ir)
+                endif
                 vmod = vmod / coeff_kin  ! U = 2*mu*V/hbar^2
 
                 do jr = 1, N_leg
@@ -340,12 +350,9 @@ c-----------------------------------------------------------------------
                     endif
                 end do
 
-                ! Source term: convert from phi space to c space
-                ! phi(x_j) = c_j / sqrt(lambda_j) = c_j * alpha_j
-                ! So c_j = phi(x_j) / alpha_j = phi(x_j) * sqrt(lambda_j)
-                !
-                ! In phi space: b_phi_i = U_i * F_l(k*r_i)
-                ! In c space: b_c_i = b_phi_i * sqrt(lambda_i)
+                ! Source term: use full potential V_nuc + V_coul_finite
+                ! (same potential as in matrix)
+                ! b = U_full * F_l * sqrt(lambda)
                 b_vec(ir) = vmod * fc_loc(l) * sqrt(leg5_w(ir))
             end do
 
@@ -404,18 +411,34 @@ c-----------------------------------------------------------------------
             end do
             b_vec(N_leg) = cmplx(0.d0, 0.d0, kind=8)
 
+            ! Debug: print b_vec before solve
+            if (ich == 1) then
+                write(*,*) "=== DEBUG Method 5 (L=", l, ") ==="
+                write(*,*) "k =", k, "eta =", eta_real, "cph(l) =", cph(l)
+                write(*,*) "R_outer =", R_outer, "N_leg =", N_leg
+                write(*,*) "gamma_s =", gamma_s
+                write(*,*) "Sum |b_vec| =", sum(abs(b_vec))
+            endif
+
             ! ============================================================
             ! SOLVE LINEAR SYSTEM FOR COEFFICIENTS c_j
             ! ============================================================
             c_vec = b_vec
             call z_lineq(N_leg, M_matrix, c_vec)
 
+            ! Debug: print c_vec after solve
+            if (ich == 1) then
+                write(*,*) "Sum |c_vec| =", sum(abs(c_vec))
+                write(*,*) "c_vec(1:3) =", c_vec(1), c_vec(2), c_vec(3)
+                write(*,*) "c_vec(N-2:N) =", c_vec(N_leg-2), c_vec(N_leg-1),
+     &                     c_vec(N_leg)
+            endif
+
             ! ============================================================
             ! EXTRACT SCATTERING AMPLITUDE
             ! ============================================================
             ! phi(R) = sum_j c_j * f_j(R)
-            ! f_j(R) = (R/r_j) * L_j(R) / sqrt(lambda_j)
-            ! f_l = phi(R) / H^+(kR)
+            ! f_l = phi(R) / (k * H^+(kR))
 
             phi_R = cmplx(0.d0, 0.d0, kind=8)
             do jr = 1, N_leg
@@ -437,15 +460,70 @@ c-----------------------------------------------------------------------
             x_mesh = k * R_outer
             call COUL90(x_mesh, eta_real, 0.d0, l,
      &                  fc_loc, gc_loc, fcp_loc, gcp_loc, 0, ifail_mesh)
+
+            ! H^+ = G + iF
             hhat_R = gc_loc(l) + iu * fc_loc(l)
 
-            if (abs(hhat_R) < 1.d-20) then
-                write(*,*) "Warning: H^+ very small at boundary"
-                f_l = cmplx(0.d0, 0.d0, kind=8)
-            else
-                ! f_l = phi(R) / (k * H^+(kR))
-                f_l = phi_R / (k * hhat_R)
+            ! Debug output
+            if (ich == 1) then
+                write(*,*) "phi_R =", phi_R
+                write(*,*) "|phi_R| =", abs(phi_R)
+                write(*,*) "F_l(kR) =", fc_loc(l), "G_l(kR) =", gc_loc(l)
+                write(*,*) "|H^+| =", abs(hhat_R)
+                write(*,*) "========================="
             endif
+
+            ! ============================================================
+            ! Calculate f_born and f_sc using integral formula (like Method 1)
+            !
+            ! f_born = -1/ecm * integral[V_short * F_l^2] dr
+            ! f_sc   = -1/ecm * sum(c_vec * b_vec) * coeff_kin / exp(2i*sigma)
+            ! ============================================================
+
+            ! f_born: integral of V_short * F_l^2 (same as Method 1)
+            ! V_short = V_nuc + V_coul_finite - V_coul_point
+            phi_R_deriv = cmplx(0.d0, 0.d0, kind=8)  ! use as f_born
+            do ir = 1, N_leg - 1
+                x_mesh = k * leg5_r(ir)
+                call COUL90(x_mesh, eta_real, 0.d0, l,
+     &                      fc_loc, gc_loc, fcp_loc, gcp_loc, 0, ifail_mesh)
+
+                ! Get V_short
+                call compute_potential_at_r5(leg5_r(ir), para, ich, vmod)
+
+                ! f_born: V_short * F_l^2 * dr
+                phi_R_deriv = phi_R_deriv + leg5_w(ir) * R_outer *
+     &                        vmod * fc_loc(l) * fc_loc(l)
+            end do
+            phi_R_deriv = -phi_R_deriv / ecm  ! f_born
+
+            ! f_sc: use integral formula with V_short
+            ! f_sc = -1/ecm * integral[V_short * F_l * psi_sc] dr
+            f_l = cmplx(0.d0, 0.d0, kind=8)
+            do ir = 1, N_leg - 1
+                x_mesh = k * leg5_r(ir)
+                call COUL90(x_mesh, eta_real, 0.d0, l,
+     &                      fc_loc, gc_loc, fcp_loc, gcp_loc, 0, ifail_mesh)
+
+                ! Get V_short
+                call compute_potential_at_r5(leg5_r(ir), para, ich, vmod)
+
+                ! psi_sc at mesh point
+                phi_R = c_vec(ir) / sqrt(leg5_w(ir))
+
+                ! integral: V_short * F_l * psi_sc * dr
+                f_l = f_l + leg5_w(ir) * R_outer * vmod * fc_loc(l) * phi_R
+            end do
+            f_l = -f_l / ecm
+
+            ! Debug
+            if (ich == 1) then
+                write(*,*) "M5: f_born=", phi_R_deriv, "|f_born|=",
+     &                     abs(phi_R_deriv)
+                write(*,*) "M5: f_sc=", f_l, "|f_sc|=", abs(f_l)
+            endif
+
+            f_l = phi_R_deriv + f_l  ! total f_l
 
             scatt_amp_nuc_channel(ich) = f_l
 

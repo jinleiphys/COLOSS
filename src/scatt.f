@@ -60,6 +60,13 @@
                 f_born = -f_born/ecm
 
                 ftot = f_sc + f_born
+
+                ! Debug output
+                if (ich == 1) then
+                    write(*,*) "M1: f_born =", f_born, "|f_born|=",abs(f_born)
+                    write(*,*) "M1: f_sc =", f_sc, "|f_sc|=", abs(f_sc)
+                endif
+
                 scatt_amp_nuc_channel(ich) = ftot
                 smat = 1.d0 + 2.d0*iu*k*ftot
                 reac_xsec = pi/k/k/(2d0*S+1d0)*(2d0*J+1d0)*(1d0-abs(smat)**2)*10d0!remember to mutiply 10: convert fm^2 to mb
@@ -255,8 +262,16 @@
                 f_sc = -f_sc/ecm/exp(2d0*iu*cph(l))
 
                 ftot = f_born + f_sc
+
+                ! Debug output
+                if (ich == 1) then
+                    write(*,*) "M1: f_born=", f_born, "|f_born|=",abs(f_born)
+                    write(*,*) "M1: f_sc=", f_sc, "|f_sc|=", abs(f_sc)
+                    write(*,*) "M1: ftot=", ftot, "|ftot|=", abs(ftot)
+                endif
+
                 scatt_amp_nuc_channel(ich) = ftot
-                
+
                 smat = 1.d0 + 2.d0*iu*k*ftot
                 reac_xsec = pi/k/k/(2d0*S+1d0)*(2d0*J+1d0)*(1d0-abs(smat)**2)*10d0!remember to mutiply 10: convert fm^2 to mb
 
